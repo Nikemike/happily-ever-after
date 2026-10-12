@@ -382,6 +382,24 @@ app.use((err, req, res, next) => {
   res.status(err.status || 500).json({ error: err.type === 'entity.too.large' ? 'That is too large to save.' : 'Something went wrong. Try again.' });
 });
 
+// One-time content updates shipped with the code. Each runs once and backs up what it replaces.
+async function migrateOnce(name, run) {
+  if (await store.get('meta', name)) return;
+  await run();
+  await store.put('meta', name, { at: new Date().toISOString() });
+  console.log(`Applied content update: ${name}`);
+}
+
 await store.init();
 await seedOnce();
+// Our Story rewritten as a shared story. The earlier chapters are kept in story_backup_v1.
+await migrateOnce('story-v2', async () => {
+  const next = JSON.parse(fs.readFileSync(path.join(here, 'content', 'story-v2.json'), 'utf8'));
+  for (const doc of await store.list('story')) {
+    const { id, ...data } = doc;
+    await store.put('story_backup_v1', id, data);
+    await store.del('story', id);
+  }
+  for (const doc of next) await store.put('story', doc.id, doc.data);
+});
 app.listen(PORT, () => console.log(`Listening on ${PORT} (store: ${store.kind}, uploads: ${s3 ? 'bucket' : localDir ? 'local folder' : 'off'})`));
