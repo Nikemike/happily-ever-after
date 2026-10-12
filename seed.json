@@ -1,0 +1,422 @@
+{
+ "awards": [
+  {
+   "id": "a01",
+   "data": {
+    "body": "",
+    "position": 1,
+    "title": "Most athletic"
+   }
+  },
+  {
+   "id": "a02",
+   "data": {
+    "body": "",
+    "position": 2,
+    "title": "Best dressed"
+   }
+  },
+  {
+   "id": "a03",
+   "data": {
+    "body": "",
+    "position": 3,
+    "title": "Best hair"
+   }
+  },
+  {
+   "id": "a04",
+   "data": {
+    "body": "",
+    "position": 4,
+    "title": "Best cosplay"
+   }
+  },
+  {
+   "id": "a05",
+   "data": {
+    "body": "",
+    "position": 5,
+    "title": "Most gladiator fight wins"
+   }
+  },
+  {
+   "id": "a06",
+   "data": {
+    "body": "",
+    "position": 6,
+    "title": "Longest bull ride"
+   }
+  },
+  {
+   "id": "a07",
+   "data": {
+    "body": "",
+    "position": 7,
+    "title": "Loudest Hawaiian shirt"
+   }
+  },
+  {
+   "id": "a08",
+   "data": {
+    "body": "",
+    "position": 8,
+    "title": "Most tiki shenanigans"
+   }
+  },
+  {
+   "id": "a09",
+   "data": {
+    "body": "",
+    "position": 9,
+    "title": "Best dance moves"
+   }
+  },
+  {
+   "id": "a10",
+   "data": {
+    "body": "",
+    "position": 10,
+    "title": "Worst dance moves, fully committed"
+   }
+  },
+  {
+   "id": "a11",
+   "data": {
+    "body": "",
+    "position": 11,
+    "title": "First on the dance floor"
+   }
+  },
+  {
+   "id": "a12",
+   "data": {
+    "body": "",
+    "position": 12,
+    "title": "Last one standing"
+   }
+  },
+  {
+   "id": "a13",
+   "data": {
+    "body": "",
+    "position": 13,
+    "title": "Farthest traveled"
+   }
+  },
+  {
+   "id": "a14",
+   "data": {
+    "body": "",
+    "position": 14,
+    "title": "Best photo of the night"
+   }
+  },
+  {
+   "id": "a15",
+   "data": {
+    "body": "",
+    "position": 15,
+    "title": "Loudest laugh"
+   }
+  },
+  {
+   "id": "a16",
+   "data": {
+    "body": "",
+    "position": 16,
+    "title": "Chicken whisperer"
+   }
+  },
+  {
+   "id": "a17",
+   "data": {
+    "body": "",
+    "position": 17,
+    "title": "Thirstiest guest"
+   }
+  },
+  {
+   "id": "a18",
+   "data": {
+    "body": "",
+    "position": 18,
+    "title": "Hungriest guest who did not RSVP"
+   }
+  },
+  {
+   "id": "a19",
+   "data": {
+    "body": "",
+    "position": 19,
+    "title": "Best party trick"
+   }
+  },
+  {
+   "id": "a20",
+   "data": {
+    "body": "",
+    "position": 20,
+    "title": "Best dad joke"
+   }
+  },
+  {
+   "id": "a21",
+   "data": {
+    "body": "For the person who knows the fewest people.",
+    "position": 21,
+    "title": "Most random person"
+   }
+  }
+ ],
+ "cats": [
+  {
+   "id": "c1",
+   "data": {
+    "body": "",
+    "photo": "",
+    "position": 1,
+    "title": "Tony/Rigatoni"
+   }
+  },
+  {
+   "id": "c2",
+   "data": {
+    "body": "",
+    "photo": "",
+    "position": 2,
+    "title": "Pancake"
+   }
+  },
+  {
+   "id": "c3",
+   "data": {
+    "body": "",
+    "photo": "",
+    "position": 3,
+    "title": "Chuck"
+   }
+  },
+  {
+   "id": "c4",
+   "data": {
+    "body": "",
+    "photo": "",
+    "position": 4,
+    "title": "GG"
+   }
+  },
+  {
+   "id": "c5",
+   "data": {
+    "body": "Enter Noob, our little grey ninja. Raised by Winston as a kitten, he is very dog like.",
+    "photo": "",
+    "position": 5,
+    "title": "Noob"
+   }
+  },
+  {
+   "id": "c6",
+   "data": {
+    "body": "",
+    "photo": "",
+    "position": 6,
+    "title": "Bad Boo"
+   }
+  }
+ ],
+ "details": [
+  {
+   "id": "hotels",
+   "data": {
+    "body": "",
+    "position": 1,
+    "title": "Hotels"
+   }
+  },
+  {
+   "id": "menu",
+   "data": {
+    "body": "",
+    "position": 3,
+    "title": "Menu"
+   }
+  },
+  {
+   "id": "parking",
+   "data": {
+    "body": "",
+    "position": 2,
+    "title": "Parking"
+   }
+  }
+ ],
+ "faq": [
+  {
+   "id": "alcohol",
+   "data": {
+    "body": "If you have to ask, do you really know us?",
+    "position": 1,
+    "title": "Will there be alcohol?"
+   }
+  },
+  {
+   "id": "drugs",
+   "data": {
+    "body": "What, are you a fuckin’ cop? I mean… of course not officer…. 👀",
+    "position": 2,
+    "title": "Will there be drugs?"
+   }
+  }
+ ],
+ "notes": [
+  {
+   "id": "allergy",
+   "data": {
+    "body": "",
+    "position": 1,
+    "title": "If you are allergic to cats, bring your allergy meds."
+   }
+  }
+ ],
+ "quotes": [
+  {
+   "id": "q01",
+   "data": {
+    "createdAt": 1791572400000,
+    "story": "I love chicken tenders. Memes aside. Always have, always will. That being said, I prioritize familiarity and consistency in food. 15 point for House Autism. I’ve been told for decades ‘if you keep eating chicken tenders you’re gonna end up turning into one!’\n\nYears ago, katie had chickens. Unfortunate events occurred and she lost her flock. When I moved down, the coop and run were in disrepair. Katie had always talked so fondly about her birbs that I got to work rebuilding. By the spring we had our first 6 chickens, and 8 ducks!\n\nI have fulfilled the prophecy. I have become a chicken tender.",
+    "text": "I have become a chicken tender."
+   }
+  },
+  {
+   "id": "q02",
+   "data": {
+    "createdAt": 1791572400001,
+    "story": "Deadpool said it best. Her crazy matches my crazy.\n\nHer crazy matches my crazy, her neuro-spicy tastes like my neuro-spicy, her trauma fits my trauma.",
+    "text": "Her crazy matches my crazy."
+   }
+  },
+  {
+   "id": "q03",
+   "data": {
+    "createdAt": 1791572400002,
+    "story": "Vintage, 1920’s, old mine cut, set in platinum, coincidentally exactly 1.37 carats.\n\nWho’s seen Empire records? If you have, you understand the significance of that arrangement of numbers. Katie has it tattooed on the inside of her lip “1:37X” One thirty seven, exactly.",
+    "text": "One thirty seven, exactly."
+   }
+  },
+  {
+   "id": "q04",
+   "data": {
+    "createdAt": 1791572400003,
+    "story": "We also have, like, 50 chickens. Chicken math be a force of nature, man. We’ve hatched 13 of our own and have more on the way.",
+    "text": "Chicken math be a force of nature, man."
+   }
+  },
+  {
+   "id": "q05",
+   "data": {
+    "createdAt": 1791572400004,
+    "story": "A plan had formed. Before dinner and out on the balcony Katie and I would enjoy the view and share a moment. I had poured a glass champagne, dropped the ring in the glass, and set Liam to wait 5 minutes before bringing the glass out to his mom.\n\nSo, the view was beautiful and blue, the air was warm and comfortable, we sat and talked together, drowning in our mutual affection and love. With perfect timing, Liam entered and handed Katie the glass. She smiled and I dropped to my knee.\n\nMe: “Will you spend the rest of your life with me?”\n\nHer: “Of course. I love you.”\n\nMe: Kiss\n\nHer: Takes a big sip champagne.\n\nMe: …..\n\nMe: ….. shit. She didn’t see the ring….shes gonna swallow it.\n\nSpoiler alert, she said yes, she didn’t drink the ring. It was silly, it was romantic, it was perfect. The ring, also perfect. The right size, the right shape, the right story.",
+    "text": "She didn’t see the ring….shes gonna swallow it."
+   }
+  }
+ ],
+ "story": [
+  {
+   "id": "ch01",
+   "data": {
+    "body": "Hello friends! Long time no post. \n\nIt’s been almost a year since I left Baltimore, and longer still since I’ve posted anything. \n\n\nTo those of you who don’t know her, I’d like to introduce you to Katie. My best friend, and now, my soon-to-be wife. We have known each other the majority of our adult lives. We have seen the highest highs and lowest lows of each other’s lives. Both of us have lost our spouse early to an illness. Through supporting one, and then the other through that loss brought us closer than either of us would ever have imagined. \n\n\nStory time!\n(Strap in for a Hallmark movie. It’s a long and emotional one, but don’t worry, it has a happy ending.)",
+    "position": 1,
+    "title": "Hello, friends"
+   }
+  },
+  {
+   "id": "ch02",
+   "data": {
+    "body": "When I moved to Baltimore I was between jobs and, quite literally, between lives. I had just moved back home after living in Germany for three years, and after losing my father to a heart-attack, my late-wife to an aggressive illness, and the father-in-law, who stepped in help hold me together, to a hat-trick of circulatory and respiratory illnesses. All three happened in the first two years I was in Germany. Aside from that, 5/7 Stars. Would definitely recommend a visit. Try the schnitzel. If you’re in Wiesbaden and want a chicken sandwich, don’t go to The Crazy Chicken Ranch. They offer a different kind of ‘snack.’ \n\nI was rarely alone in Baltimore, but still quite lonely. I was still healing from my loss while making many new and wonderful friends. \n\nEventually, I worked up the courage to ask my very best good friend Katie to fit me for some Water Wings and help me jump\nIn the Dating Pool.",
+    "position": 2,
+    "title": "Between lives"
+   }
+  },
+  {
+   "id": "ch03",
+   "data": {
+    "body": "Backstory Flashback:\n\nAbout 17 years ago my dad decided to open a tiki bar and crab house in Crisfield, Maryland. Over the next few summers I worked there I became fast, and life-long friends with my then-future wife Bethany, her best friend Katie, and Katie’s then-boyfriend Jeremy. \n\nAs you can guess, Bethany and I dated, fell in love, got married, got a dog and a cat and a dog and a house and, and, and… Katie and Jeremy got married years before Bethany and I. Bethany was her Maid of Honor. She returned the favor at our wedding. Jeremy was the MVP of our wedding, rebuilding the wilted flower arrangements that morning, hauling around bales of hay, and otherwise solving crisis after crisis. Needless to say, the four of us were thick as thieves. \n\nWhile Bethany and I were living in Germany she became ill and deteriorated very quickly. I’ll spare the details, but she was hospitalized in December and passed the following March. \n\nI was lost. I was in a foreign country. I wasn’t alone.\n\nBethany’s father, David, came to Germany when she became ill and stayed with me months after she passed. I will be eternally grateful for the love, support, and grace I received in the darkest time of my life. And, of course, Katie was with me on the phone. She would spend hours with me on the phone, talking about life, pain, love, loss, etc. She was also there when I fell down, repeatedly, hard. Talking me back on my feet, back from the brink.\n\nI have known her for the majority of my adult life. She has seen the best moments of my life, and the worst. \n\nEnd Flashback:",
+    "position": 3,
+    "title": "Backstory: the tiki bar"
+   }
+  },
+  {
+   "id": "ch04",
+   "data": {
+    "body": "So, back to Baltimore. In December of ‘24 Katie’s husband Jeremy was diagnosed with esophageal  cancer. It was extremely aggressive. By the following March, he passed in the hospital, surrounded by his loved ones.\n\nWhen Jeremy started getting sick, I knew what she was about to go through. We talked on the phone every day for hours, me doing the absolute best I could to support her the way she did for me. Needless to say, we have both seen the best and worst of each other’s lives.",
+    "position": 4,
+    "title": "Back to Baltimore"
+   }
+  },
+  {
+   "id": "ch05",
+   "data": {
+    "body": "Katie asked me to join her on the her business’ yearly weekend cruise, as thanks for supporting her and since it has been years since we’d seen each other. We started dating immediately.\n\nI had been floundering in the dating pool for the first time and Katie had been helping me. I never dated before. Bethany was my first girlfriend and before that, she was my best friend. We never really dated. So, I had the expectation that I would date around for a while. By the second day of the cruise, we’re standing at the elevator and I’m mother-fuckering at the universe because I already knew I wanted to spend the rest of my life with her. \n\nI have never, in my life, felt as at ease, felt as understood, felt as seen and loved and accepted as I did in that moment. And then we started making fart noises. \n\nOh yeah, Katie has a son. At the time, Liam was 10. He was standing with us.\n\nFor those of you who don’t know me that well, I have never wanted to have kids. Ever. I got a vasectomy years ago. No kids. Nada. Never.\n\nAnyhow, I love this kid, and he is awesome. I’ve known him his entire life, but I’m finally getting to know him now. He is more resilient than anyone his age should have to have been and still a happy kid despite it. And a world class smart-ass, which I respect.\n\nI moved to Florida in November and I never thought I could actually feel this happy. ",
+    "position": 5,
+    "title": "The cruise"
+   }
+  },
+  {
+   "id": "ch06",
+   "data": {
+    "body": "I’ve always had trouble understanding people things. I’ve known and dealt with having ADHD since I was a kid, but it’s only recently that I’ve realized I’ve got the ‘tism too.\n\nDon’t worry, it’s not that kinda story. \n\nKatie and I share a lot of brain chemistry. We both think and navigate the world in very similar ways. That’s probably why we both say that living together feels like it’s always been and brand new at the same time, all the time. \n \nI’ve had to force myself to think and behave in a way that is considered normal. It’s exhausting. It sucks. But I’m not alone and this isn’t about that. It is a relief beyond measure to have someone that understands exactly how my brain works and works, hard, at making me feel comfortable to actually be myself.\n\nWe both have shared but separate trauma. We both have the love and lessons, painfully earned from our past relationships, life-partnerships. Whimsy has never been far from my life, even in my darkest days. Katie lives her life the same way. Both of us, at one point, decided that ‘life had sucked enough to take it too seriously.’ Hence Hawaiian shirts all the time.",
+    "position": 6,
+    "title": "Hawaiian shirts all the time"
+   }
+  },
+  {
+   "id": "ch07",
+   "data": {
+    "body": "Brief backstory flashback!\n\nI love chicken tenders. Memes aside. Always have, always will. That being said, I prioritize familiarity and consistency in food. 15 point for House Autism. I’ve been told for decades ‘if you keep eating chicken tenders you’re gonna end up turning into one!’\n\nEnd flashback! \n\nI am become him, The tender of chickens. \n\nYears ago, katie had chickens. Unfortunate events occurred and she lost her flock. When I moved down, the coop and run were in disrepair. Katie had always talked so fondly about her birbs that I got to work rebuilding. By the spring we had our first 6 chickens, and 8 ducks! \n\nI have fulfilled the prophecy. I have become a chicken tender.\n\nKatie was worried about me moving down there. I now live in Naples, but not Naples proper. In Golden Gate Estates. One of the largest sub-divisions in the country and decidedly more rural than I have ever experienced. I’ll admit, I was a little worried myself. But now that I am here, I love it. We now have two baby ducklings from our second pair, Chorizo and Crunch Wrap Supreme. Sadly, Churo and Chalupa, our other two ducklings passed from genetic heart issues. \n\nAnother thing Katie and I share; an understanding that the lows of life that give us the perspective to enjoy the highs. \n\nWe also have, like, 50 chickens. Chicken math be a force of nature, man. We’ve hatched 13 of our own and have more on the way. ",
+    "position": 7,
+    "title": "The chicken tender prophecy"
+   }
+  },
+  {
+   "id": "ch08",
+   "data": {
+    "body": "I grew up working in my father’s restaurants. I was rarely easy, and I only recently started understanding why, but I will always be glad I did it. It forced me to learn the social skills I was always afraid of. Emphasis on ‘forced.’ Those social skills have helped me navigate may career in IT. I have technical skills and I have people skills, usually it’s one or the other. Working in IT pays the bills, but it’s impersonal and monotonous. I wake up hours earlier than I usually do to tend to the chickens, in the afternoon I tend to the ducks, in the evenings I’m building or fixing stuff on the ‘farm’ or the house.\n\nMy luxury apartment overlooking the inner harbor and Camden Yards is long gone, it’s a 20 minute drive to the nearest store, I heard more gunfire the first night I spent here than two years in Baltimore. \n\nEver gotten really scared and suddenly your mouth tastes like pennies? That’s your adrenal gland pouring adrenaline in your blood and tasting it in your mouth. That or you just woke up after someone asking you if that rag smelled like chloroform. Memories are fun.\n\nI have never been happier or felt better about life.\n\nDeadpool said it best. Her crazy matches my crazy.\n\nHer crazy matches my crazy, her neuro-spicy tastes like my neuro-spicy, her trauma fits my trauma.\n\nHave you ever had a sleep over with your best friend when you’re a kid and something happens, snowstorm, sufficient pleading, mom and dad’s evening out turns into a weekend in Atlantic City, etc…, and then you find out you get to spend a whole extra night with them?!\n\nI’m on day 239 and I have a great feeling about 240.\n\nLife is weird. Love is breathtakingly simple.*\n*(Love may appear differently depending on the user’s past experiences, personal traumas, and cultural understanding. User’s experience will likely vary. Satisfaction rarely guaranteed.)",
+    "position": 8,
+    "title": "Day 239"
+   }
+  },
+  {
+   "id": "ch09",
+   "data": {
+    "body": "We aren’t issued a finite ration of love when we clock-in to this life. I’m gonna quote a really smart lady and use her metaphor; \n“Anyone who has had a second kid or a second spouse knows, your capacity to love only grows larger as our life progresses and expands.” \n- A really smart lady (paraphrasing)\n\nWhen two people fall in love, they each take a piece of themselves and give it to the other. You never get that back. It lives in them, it dies with them, it lives forever as part of their memory. The part of them that you carry inside lives on with you. \n\nI speak only for myself, but I believe that this part never goes away, never dies, is never ‘ejected.’ Like a cherished trophy hard won after a summer of sports, the most important and valuable thing in your life at the time, now… on the shelf of treasured memories and mementos. Never forgotten, never devalued, but slowly blending in with the other treasured, but past, memories.\n\nI will always carry a piece of Bethany in me. A piece of me died with her. My ‘life’ ended when I fell in love with Bethany. My ‘life’ ended when she died. My ‘life’ in Baltimore started making its final arrangements as I mother-fucked the universe standing in front of that cruise ship elevator.",
+    "position": 9,
+    "title": "Room in the heart"
+   }
+  },
+  {
+   "id": "ch10",
+   "data": {
+    "body": "I didn’t think I ever wanted more animals after Winston died. He was Bethany and I’s first dog. Horse girls are real, so are dog girls. And I quote: “Winston is my darling baby boy who can never ever do anything wrong and is perfect in every way.”\n\nBethany’s always been a good judge of character. For about 6 months between Germany and Baltimore, I lived in Virginia. Like most parolees who have spent time in a half-way house, we share the same sentiment of our temporary accommodations, Fuck. That. Place.\n\nSorry if you’re from Virginia, but your state can go pound sand. I’m a proud Marylander and I’ve never gotten over the slight that Virginia levied upon Maryland hundreds of years before I was born! Ever wonder why Washington DC is perfectly square on two corners? Almost like it was supposed to be a city, 10 miles by 10 miles, across the Potomac? Yeah. Someone didn’t live up to their side of the agreement! \n\nAmong other reasons that’s why we turned Mrs. Lee’s rose garden into a cemetery for union soldiers, lost in the Civil War. Among other reasons, I dislike the state of Virginia. One of them is the memory of Winston’s sudden and brief struggle with prostate cancer. Get checked, boys.\n\nHolding Winston while he made his way over the Rainbow Bridge was surprisingly easier and more painful than I could have anticipated. It was somber, sad, full of memories. He was survived by me, his younger brother Noob, my cat, and Noobs younger brother, Pig, my dog.\n\nWe got Winston the winter I went back to college.\n\nBy the way, I owe my entire life to Bethany. I went back to school and got by degree at her urging. She saw how bitter and dark working in the restaurants was making me. Aside from managing people in an environment I was very ill suited for, Heroin really hit Annapolis hard my last year or so in the industry. I saw a log of good people, good friends, ruined or dead. I didn’t like who I was. Bethany put me on a new path. \n\nAnyway, we got Winston and quickly realized, me at school her at work all day was not fair to Winston. So, I got Bethany the cat she always wanted. I also bought stock in Zyrtec. You can’t beat allergies with willpower, but can with drugs! Enter Noob, our little grey ninja. Raised by Winston as a kitten, he is very dog like. Eventually, noob turned into a teenager and started picking on Winston! The betrayal… So, we decided Winston needed backup and got DeKuyper (if you know, you know, and you seem cool). He made the most adorable little squealing noises as a puppy, hence ‘Pig.’ So for those keeping track, we have a dog, a cat who thinks he’s a dog, and a dog who thinks he’s a cat who thinks he’s a dog. \n\nBethany had so much room in her heart. But Winston was always special. I knew I was burning like bacon in a house fire. I would t have it another way. Winston was my last real link to Bethany. Feeling him slip away broke me in a new and different way. It gave me relief that he was no longer suffering. It gave me a little more closure on part of my life. It was slow and creeping and suddenly all over before I knew it.\n\nI hugged him goodbye, thanked everyone profusely, walked to my car, and called Katie. It’d been less than a month since Jeremy had passed. Katie is in the middle of raising and homeschooling her son, running the plumbing company, and spending every waking moment to study for the contracting license she suddenly needs to keep the doors open. And she’s talking me through my shitty day in Virginia. \n\nA little more about Katie and the state of Florida. In Florida, there’s no such thing as a licensed plumber. A plumber takes a test to become a Plumbing Contractor and now has license to open a business and employ other plumbers under their lisence. Unfortunately, these titles are non-hereditary. To keep the business afloat, katie started studying, hard, constantly, maniacally. The test has a daunting failure rate. The crash course was 12 weekends, 8 hours a day, Saturday and Sunday. I think she slept every other Wednesday morning for about an hour when the landscapers were working. The other she was in the office with breakfast for the guys at the work meeting.\n\nSo, anyway, Virginia can pound sand. I have other reasons but that’s for another story.\n\nI now have 6 cats, 1 dog, 8 ducks, like 50 chickens, a gigantic Orb Weaver in the chicken coop named Charlotte, and more to come. My heart grows with each new addition.",
+    "position": 10,
+    "title": "Winston, Noob and Pig"
+   }
+  },
+  {
+   "id": "ch11",
+   "data": {
+    "body": "So, as close to exactly one year later as the universal would allow, I asked Katie if she would spend the rest of her life together with me. \n\nOceans 11-esq smash cut to a brilliant plan montage:\n\nI suck a planning. I loooooove preparing for things. I love logistics. I love details, and nuance, and making all of the moving parts fit juuuuust right at the last moment. But I suck at planning. There is, literally, infinite possibilities for anything. How do you decide?!?!\n\nProcrastination and hurry-up offense, that’s how! Shout out to the other ADHD peeps in the room. \n\nYears ago, Katie and Jeremy booked an amazing room for the company cruise. It was so amazing that she booked the room again two years in advance for that year’s Comapny cruise. It came with a dedicated butler for our room and like 5 others in this baller-ass section of the VIP section. We were hanging out well above our tax-bracket. \n\nBut, this meant I had a co-conspirator, on the inside… I had already recruited Liam into the scheme about…. 36 hours before we left for the cruise ship? My man is solid. I asked him how he felt about me asking him mom to marry me. He thought hard, rolled his eyes… hard, and said “yeah, that’s cool.”\n\nSo, the plan was…. Let’s say ‘forming.’ I called ahead I talked to the room steward, to our concierge, to our room’s butler, some dude at the bar named Jeff… thanks for the pep-talk, sir. 🫡 \n\nA plan had formed. Before dinner and out on the balcony Katie and I would enjoy the view and share a moment. I had poured a glass champagne, dropped the ring in the glass, and set Liam to wait 5 minutes before bringing the glass out to his mom. \n\nSo, the view was beautiful and blue, the air was warm and comfortable, we sat and talked together, drowning in our mutual affection and love. With perfect timing, Liam entered and handed Katie the glass. She smiled and I dropped to my knee. \n\nMe: “Will you spend the rest of your life with me?” \nHer: “Of course. I love you.”\nMe: Kiss\nHer: Takes a big sip champagne.\nMe: …..\nMe: ….. shit. She didn’t see the ring….shes gonna swallow it.\n\n\nSpoiler alert, she said yes, she didn’t drink the ring. It was silly, it was romantic, it was perfect. The ring, also perfect. The right size, the right shape, the right story. \n\nVintage, 1920’s, old mine cut, set in platinum, coincidentally exactly 1.37 carats. \n\nWho’s seen Empire records? If you have, you understand the significance of that arrangement of numbers. Katie has it tattooed on the inside of her lip “1:37X” One thirty seven, exactly.\n\nWhat sort of man can find such a perfect stone in a perfect ring with a perfect story? Who has two thumbs and let the lady pick out the perfect ring? This guy. Mike Hardesty, pleasure to meet ya. Guys, take note.",
+    "position": 11,
+    "title": "The plan"
+   }
+  },
+  {
+   "id": "ch12",
+   "data": {
+    "body": "So, Katie now owns Mike’s Plumbing of Southwest Florida. Irony abounds, I know. It started with Jeremy’s father, Mike Bohall, 30 years ago started the company. About 12 years ago Jeremy took over and it’s been a family operation ever since. Katie’s mom answers phones, Katie’s brother Matt the most senior tech in the company, everyone else is literally, honorarally, or on the way to being family as well. \n\nKatie got to show off the ring to her friends, family, and coworkers right away. Conveniently, most of all three were already on the boat.\n\nTiming is a funny thing. Neither of us knew what the other was planning, but Matt also had the notion of putting a ring on someone that weekend, too. After our announcement, Katie reassured Matt that neither of us would feel anything but excitement and joy if he proposed to Ashley, his girlfriend of many years on the boat, too.\n\nThe next evening, with the sun setting, music in the air, a passed out drunk guy broiling himself in an adjacent lounger, Matt dropped to a knee at the back of the boat in front of friend, family, coworkers, and strangers to ask her to marry him.\nShe said yes.\n\nFamily is important. You get two families in your life. The one you’re born with and the one you choose. \n\n\n\n\n\nShe truly adores me, and I truly adore her.",
+    "position": 12,
+    "title": "Two families"
+   }
+  }
+ ]
+}

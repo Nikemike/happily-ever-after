@@ -1,0 +1,2115 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<meta name="description" content="Katie &amp; Michael’s Happily Ever After Party. February 20, 2027, Naples, Florida.">
+<style>html{color-scheme:light}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>Happily Ever After Party</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Karla:wght@400;500;700&family=Parisienne&family=Playfair+Display:wght@500;600&family=Playfair+Display+SC&display=swap">
+<style>
+  /* Layout: one sheet of invitation paper. The floral canopy hangs from the top, the
+     invitation's own composition follows (photo-booth strip left, lettering right),
+     then the RSVP card and photo sharing, and the floral bed closes the sheet. */
+  :root {
+    color-scheme: light;
+    --paper: #f1eee1;        /* the invitation's cream */
+    --backdrop: #dde4d0;     /* pale leaf wash behind the sheet */
+    --card: #fbf9f0;         /* photo paper / RSVP card */
+    --field: #fffdf7;
+    --leaf: #4c8a2e;         /* the invitation's green lettering */
+    --monstera: #1f3d2a;     /* deep leaf, used as ink */
+    --hibiscus: #d5386a;
+    --hibiscus-deep: #b82457; /* the dress code panel */
+    --plumeria: #f2b53a;
+    --thatch: #b95f1c;       /* tiki-hut orange */
+    --line: rgba(31, 61, 42, 0.16);
+    --line-strong: rgba(31, 61, 42, 0.38);
+    --shadow: rgba(31, 61, 42, 0.22);
+    --font-script: 'Parisienne', 'Snell Roundhand', 'Apple Chancery', 'Segoe Script', cursive;
+    --font-caps: 'Playfair Display', 'Didot', Georgia, serif;
+    --font-smallcaps: 'Playfair Display SC', 'Playfair Display', Georgia, serif;
+    --font-text: 'Karla', 'Avenir Next', 'Segoe UI', system-ui, sans-serif;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; }
+
+  body {
+    background: var(--backdrop);
+    color: var(--monstera);
+    font-family: var(--font-text);
+    font-size: 1.0625rem;
+    line-height: 1.55;
+  }
+
+  .sheet {
+    max-width: 940px;
+    margin-inline: auto;
+    background: var(--paper);
+    box-shadow: 0 18px 50px -18px var(--shadow);
+    overflow: clip;
+  }
+  .band { display: block; width: 100%; height: auto; }
+
+  .hero, .rsvp, .photos { padding-inline: clamp(20px, 6vw, 72px); }
+
+  /* ---------- hero: the invitation ---------- */
+  .hero {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 36px;
+    padding-block: 4px 56px;
+  }
+  .lettering {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 26px;
+    text-align: center;
+    color: var(--leaf);
+  }
+  h1 {
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-weight: 400;
+    text-wrap: balance;
+  }
+  .names {
+    font-family: var(--font-script);
+    font-size: clamp(2.5rem, 8.4vw, 4.25rem);
+    line-height: 1.1;
+  }
+  .hea {
+    font-family: var(--font-caps);
+    font-weight: 600;
+    font-size: clamp(1.45rem, 5.4vw, 2.8rem);
+    letter-spacing: 0.035em;
+    text-transform: uppercase;
+    line-height: 1.2;
+    margin-top: 0.15em;
+  }
+  .party {
+    font-family: var(--font-script);
+    font-size: clamp(4.5rem, 19vw, 8.5rem);
+    line-height: 0.95;
+    margin-top: 0.04em;
+  }
+  .invite-lines {
+    margin: 0;
+    font-family: var(--font-script);
+    font-size: clamp(1.6rem, 5.2vw, 2.3rem);
+    line-height: 1.32;
+  }
+  .invite-lines span { display: block; }
+  .dress {
+    margin: 0;
+    max-width: 21ch;
+    font-family: var(--font-smallcaps);
+    font-size: clamp(1.1rem, 3.6vw, 1.5rem);
+    letter-spacing: 0.03em;
+    line-height: 1.35;
+    text-wrap: balance;
+  }
+  .meta {
+    margin: 0;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 4px 14px;
+    color: var(--monstera);
+    font-size: 0.8125rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+  .meta span + span::before {
+    content: "";
+    display: inline-block;
+    width: 6px; height: 6px;
+    margin-right: 14px;
+    border-radius: 50%;
+    background: var(--hibiscus);
+    vertical-align: 0.12em;
+  }
+  .note {
+    margin: -14px 0 0;
+    color: var(--monstera);
+    font-size: 0.9375rem;
+    opacity: 0.82;
+  }
+
+  .cta {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+  }
+  .quip {
+    margin: 0;
+    max-width: 30ch;
+    color: var(--monstera);
+    font-size: 1rem;
+    text-wrap: balance;
+  }
+
+  .button {
+    display: inline-block;
+    border: 0;
+    border-radius: 999px;
+    padding: 14px 34px;
+    background: var(--monstera);
+    color: var(--paper);
+    font: 700 0.875rem/1 var(--font-text);
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    text-decoration: none;
+    cursor: pointer;
+    transition: transform 160ms ease, background-color 160ms ease;
+  }
+  .button:hover { background: var(--leaf); transform: translateY(-1px); }
+  .button:disabled { background: var(--line-strong); cursor: not-allowed; transform: none; }
+  .button.quiet {
+    background: transparent;
+    color: var(--monstera);
+    box-shadow: inset 0 0 0 1.5px var(--line-strong);
+  }
+  .button.quiet:hover { background: var(--line); }
+  :focus-visible { outline: 3px solid var(--plumeria); outline-offset: 3px; }
+
+  /* ---------- photo-booth strip ---------- */
+  .booth {
+    margin: 0;
+    width: min(100%, 380px);
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    align-items: start;
+    gap: 8px;
+    padding: 8px;
+    background: var(--card);
+    box-shadow: 0 10px 24px -10px var(--shadow), 0 0 0 1px var(--line);
+    transform: rotate(-2deg);
+    transition: transform 300ms ease;
+  }
+  .booth:hover { transform: rotate(-0.5deg); }
+  .booth img {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 3 / 4;
+    object-fit: cover;
+    filter: sepia(0.32) contrast(1.03);
+  }
+
+  @media (min-width: 760px) {
+    body { padding-block: 36px; }
+    .hero {
+      flex-direction: row;
+      align-items: flex-start;
+      gap: 48px;
+      padding-block: 0 72px;
+    }
+    .booth {
+      order: -1;
+      flex: none;
+      width: 178px;
+      grid-template-columns: minmax(0, 1fr);
+      gap: 10px;
+      padding: 10px;
+      margin-top: -96px;         /* tucks over the canopy leaves, as on the invitation */
+      transform: rotate(-6deg);
+    }
+    .booth:hover { transform: rotate(-4deg); }
+    .lettering { flex: 1 1 0; padding-top: 8px; }
+  }
+
+  /* ---------- sections ---------- */
+  section > header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    text-align: center;
+    margin-bottom: 28px;
+  }
+  .eyebrow {
+    margin: 0;
+    font-size: 0.8125rem;
+    font-weight: 700;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--thatch);
+  }
+  h2 {
+    margin: 0;
+    font-family: var(--font-script);
+    font-weight: 400;
+    font-size: clamp(2.4rem, 8vw, 3.4rem);
+    line-height: 1.15;
+    color: var(--leaf);
+    text-wrap: balance;
+  }
+
+  .rsvp { padding-block: 8px 64px; }
+  .card {
+    max-width: 560px;
+    margin-inline: auto;
+    padding: clamp(22px, 5vw, 40px);
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    box-shadow: 0 14px 30px -22px var(--shadow);
+  }
+  form { display: flex; flex-direction: column; gap: 24px; }
+  .field { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+  fieldset.field { border: 0; margin: 0; padding: 0; }
+  label.q, legend.q {
+    padding: 0;
+    font-weight: 700;
+    font-size: 1rem;
+  }
+  legend.q { margin-bottom: 8px; }
+  input[type="text"], input[type="number"], input[type="password"], textarea {
+    width: 100%;
+    padding: 13px 15px;
+    font: inherit;
+    color: var(--monstera);
+    background: var(--field);
+    border: 1.5px solid var(--line-strong);
+    border-radius: 4px;
+  }
+  .choices { display: flex; flex-wrap: wrap; gap: 10px; }
+  .choice {
+    flex: 1 1 190px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 13px 15px;
+    background: var(--field);
+    border: 1.5px solid var(--line-strong);
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  .choice input { accent-color: var(--hibiscus); width: 18px; height: 18px; margin: 0; flex: none; }
+  .choice:has(input:checked) { border-color: var(--monstera); box-shadow: inset 0 0 0 1px var(--monstera); }
+  .stepper { display: flex; gap: 8px; align-items: stretch; max-width: 220px; }
+  .stepper input { text-align: center; font-variant-numeric: tabular-nums; -moz-appearance: textfield; appearance: textfield; }
+  .stepper input::-webkit-outer-spin-button, .stepper input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+  .stepper button {
+    flex: none;
+    width: 48px;
+    font: 500 1.375rem/1 var(--font-text);
+    color: var(--monstera);
+    background: var(--field);
+    border: 1.5px solid var(--line-strong);
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  .stepper button:hover { background: var(--line); }
+  .error { margin: 0; color: var(--hibiscus); font-weight: 700; font-size: 0.9375rem; }
+  .actions { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+
+  .tag {
+    align-self: flex-start;
+    display: inline-block;
+    padding: 5px 11px;
+    border: 1.5px solid var(--thatch);
+    border-radius: 999px;
+    color: var(--thatch);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+  }
+  .reply { display: flex; flex-direction: column; gap: 16px; }
+  .reply p { margin: 0; }
+  .reply .summary {
+    padding: 14px 16px;
+    background: var(--field);
+    border-left: 4px solid var(--leaf);
+    font-weight: 700;
+    overflow-wrap: anywhere;
+  }
+
+  .photos { padding-block: 8px 56px; }
+  .photos .card { display: flex; flex-direction: column; gap: 18px; }
+  .photos .card > p { margin: 0; }
+  progress { width: 100%; height: 10px; accent-color: var(--leaf); }
+  .login { padding-inline: clamp(20px, 6vw, 72px); padding-block: 8px 56px; }
+  a.mini { display: inline-block; text-decoration: none; }
+  .thumbs { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 14px; }
+  .thumb { margin: 0; min-width: 0; display: flex; flex-direction: column; gap: 6px; }
+  .thumb img, .thumb .video {
+    display: flex; align-items: center; justify-content: center;
+    width: 100%; aspect-ratio: 1 / 1; object-fit: cover;
+    background: var(--field); border: 1px solid var(--line); overflow-wrap: anywhere;
+    padding: 0; font-size: 0.8125rem; text-align: center; color: var(--monstera);
+  }
+  .thumb figcaption { font-size: 0.8125rem; opacity: 0.8; overflow-wrap: anywhere; }
+  .sub-note { font-size: 0.9375rem; opacity: 0.85; }
+
+  /* ---------- our story ---------- */
+  .story { padding-inline: clamp(20px, 6vw, 72px); padding-block: 8px 56px; }
+  .chapters { max-width: 640px; margin-inline: auto; border-bottom: 1px solid var(--line); }
+  .chapter { border-top: 1px solid var(--line); }
+  .chapter summary {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 16px 2px;
+    cursor: pointer;
+    list-style: none;
+    font-family: var(--font-caps);
+    font-weight: 600;
+    font-size: 1.25rem;
+    line-height: 1.3;
+  }
+  .chapter summary::-webkit-details-marker { display: none; }
+  .chapter summary::after {
+    content: "+";
+    flex: none;
+    font-family: var(--font-text);
+    font-weight: 500;
+    font-size: 1.5rem;
+    line-height: 1;
+    color: var(--leaf);
+  }
+  .chapter[open] summary::after { content: "\2212"; }
+  .chapter .body { display: flex; flex-direction: column; gap: 14px; padding: 0 2px 24px; }
+  .chapter .body p { margin: 0; white-space: pre-line; line-height: 1.65; overflow-wrap: anywhere; }
+  .placeholder { margin: 0; text-align: center; opacity: 0.8; }
+
+  /* ---------- quotes and inside jokes ---------- */
+  .jokes {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 18px;
+    padding-inline: clamp(20px, 6vw, 72px);
+    padding-block: 0 56px;
+  }
+  .jokes > header, .admin > header { margin-bottom: 0; }
+  .hint { margin: 0; text-align: center; font-size: 0.9375rem; opacity: 0.82; }
+  .stage {
+    width: 100%;
+    max-width: 760px;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    grid-auto-rows: minmax(88px, auto);
+    gap: 6px;
+  }
+  .stage .cell { display: flex; min-width: 0; min-height: 88px; }
+  .stage .cell:nth-child(n+5) { display: none; }
+  @media (min-width: 760px) {
+    .stage { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+    .stage .cell:nth-child(n+5) { display: flex; }
+  }
+  .quote {
+    appearance: none;
+    max-width: 100%;
+    margin: 0;
+    padding: 6px 10px;
+    border: 0;
+    border-radius: 4px;
+    background: none;
+    color: var(--leaf);
+    font-family: var(--font-script);
+    font-size: 1.8rem;
+    line-height: 1.2;
+    text-align: center;
+    overflow-wrap: anywhere;
+    cursor: pointer;
+  }
+  .quote.long { font-size: 1.4rem; }
+  .quote.tone-1 { color: var(--hibiscus); }
+  .quote.tone-2 { color: var(--thatch); }
+  .quote.tone-3 { color: var(--monstera); }
+  .quote:hover { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 5px; }
+  .stage .quote { opacity: 0; transition: opacity 900ms ease; }
+  .stage .quote.on { opacity: 1; }
+  .all-quotes {
+    list-style: none;
+    max-width: 760px;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 6px 18px;
+  }
+
+  dialog.pop {
+    width: min(520px, calc(100vw - 32px));
+    padding: 0;
+    border: 0;
+    border-radius: 6px;
+    background: var(--card);
+    color: var(--monstera);
+    box-shadow: 0 30px 60px -20px var(--shadow);
+  }
+  dialog.pop::backdrop { background: rgba(31, 61, 42, 0.5); }
+  .pop-inner { display: flex; flex-direction: column; gap: 16px; padding: clamp(22px, 5vw, 36px); }
+  .pop-quote {
+    margin: 0;
+    color: var(--leaf);
+    font-family: var(--font-script);
+    font-size: clamp(1.9rem, 6vw, 2.5rem);
+    line-height: 1.15;
+    overflow-wrap: anywhere;
+  }
+  .pop-story { display: flex; flex-direction: column; gap: 12px; max-height: 50vh; overflow-y: auto; }
+  .pop-story p { margin: 0; white-space: pre-line; line-height: 1.6; overflow-wrap: anywhere; }
+
+  /* ---------- admin ---------- */
+  .admin {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 28px;
+    padding-inline: clamp(20px, 6vw, 72px);
+    padding-block: 8px 56px;
+  }
+  .admin .card { width: 100%; max-width: 640px; display: flex; flex-direction: column; gap: 22px; }
+  .admin h3 { margin: 0; font-family: var(--font-caps); font-weight: 600; font-size: 1.35rem; line-height: 1.3; }
+  .admin .sub { margin: -14px 0 0; font-size: 0.9375rem; opacity: 0.82; }
+  textarea { min-height: 104px; line-height: 1.5; resize: vertical; }
+  textarea.tall { min-height: 260px; }
+  .narrow { max-width: 120px; }
+  .rows { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
+  .row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 10px 16px;
+    padding: 14px 0;
+    border-top: 1px solid var(--line);
+  }
+  .row .what { flex: 1 1 240px; min-width: 0; display: flex; flex-direction: column; gap: 4px; }
+  .row .what strong, .row .what span { overflow-wrap: anywhere; }
+  .row .what span { font-size: 0.9375rem; opacity: 0.8; }
+  .row .acts { display: flex; flex-wrap: wrap; gap: 8px; }
+  .mini {
+    appearance: none;
+    padding: 9px 14px;
+    border: 1.5px solid var(--line-strong);
+    border-radius: 999px;
+    background: var(--field);
+    color: var(--monstera);
+    font: 700 0.75rem/1 var(--font-text);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    cursor: pointer;
+  }
+  .mini:hover { background: var(--line); }
+  .mini.danger { border-color: var(--hibiscus); color: var(--hibiscus); }
+  .status { margin: 0; font-size: 0.9375rem; font-weight: 700; }
+  .status.bad { color: var(--hibiscus); }
+  .foot { display: flex; justify-content: center; padding-inline: 20px; }
+  .foot .mini { margin-block: 16px 20px; }
+
+  /* ---------- tabs ---------- */
+  .tabs {
+    position: relative;
+    z-index: 5;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 4px 6px;
+    padding: 12px clamp(12px, 4vw, 40px);
+    background: var(--paper);
+  }
+  .tabs a {
+    padding: 10px 13px;
+    border-radius: 999px;
+    color: var(--monstera);
+    font: 700 0.75rem/1 var(--font-text);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    text-decoration: none;
+  }
+  .tabs a:hover { background: var(--line); }
+  .tabs a[aria-current="page"] { background: var(--monstera); color: var(--paper); }
+  @media (min-width: 760px) {
+    .tabs { position: sticky; top: env(safe-area-inset-top, 0px); box-shadow: 0 1px 0 var(--line); }
+  }
+  /* inner tabs get a shorter canopy so the content starts sooner */
+  .sheet[data-current]:not([data-current="home"]) .canopy {
+    height: clamp(96px, 17vw, 170px);
+    object-fit: cover;
+    object-position: top center;
+    -webkit-mask-image: linear-gradient(#000 55%, transparent);
+    mask-image: linear-gradient(#000 55%, transparent);
+  }
+
+  /* ---------- dress code ---------- */
+  .dress-band { padding-inline: clamp(20px, 6vw, 72px); padding-block: 0 56px; }
+  .dress-link {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+    max-width: 700px;
+    margin-inline: auto;
+    padding: clamp(26px, 5vw, 40px) clamp(18px, 4vw, 36px);
+    border-radius: 6px;
+    background: var(--hibiscus-deep);
+    color: var(--paper);
+    text-align: center;
+    text-decoration: none;
+    box-shadow: 0 18px 36px -18px var(--shadow);
+    transition: transform 160ms ease;
+  }
+  .dress-link:hover { transform: translateY(-2px); }
+  .dress-link .eyebrow { color: var(--paper); }
+  .dress-line {
+    font-family: var(--font-smallcaps);
+    font-size: clamp(1.55rem, 5.8vw, 2.6rem);
+    line-height: 1.2;
+    letter-spacing: 0.02em;
+    text-wrap: balance;
+  }
+  .dress-go {
+    padding-bottom: 5px;
+    border-bottom: 2px solid var(--plumeria);
+    font: 700 0.875rem/1 var(--font-text);
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+  }
+  .dress-page, .logistics, .faq { padding-inline: clamp(20px, 6vw, 72px); padding-block: 8px 56px; }
+  .dress-big {
+    max-width: 20ch;
+    margin: 0 auto 30px;
+    color: var(--hibiscus-deep);
+    font-family: var(--font-smallcaps);
+    font-size: clamp(1.8rem, 7vw, 3rem);
+    line-height: 1.2;
+    text-align: center;
+    text-wrap: balance;
+  }
+  .prose { max-width: 640px; margin-inline: auto; display: flex; flex-direction: column; gap: 14px; }
+  .prose p, .detail .body p { margin: 0; white-space: pre-line; line-height: 1.65; overflow-wrap: anywhere; }
+  .prose + .placeholder { margin-top: 0; }
+
+  /* ---------- good to know ---------- */
+  .know {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 36px;
+    padding-inline: clamp(20px, 6vw, 72px);
+    padding-block: 8px 56px;
+  }
+  .know > header { margin-bottom: 0; }
+  .notes {
+    list-style: none;
+    width: 100%;
+    max-width: 640px;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    border-bottom: 1px solid var(--line);
+  }
+  .gtk-note {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    padding: 20px 2px;
+    border-top: 1px solid var(--line);
+    text-align: center;
+  }
+  .gtk-note strong {
+    max-width: 34ch;
+    font-family: var(--font-caps);
+    font-weight: 600;
+    font-size: 1.25rem;
+    line-height: 1.35;
+    text-wrap: balance;
+    overflow-wrap: anywhere;
+  }
+  .gtk-note .body p { margin: 0; line-height: 1.6; overflow-wrap: anywhere; }
+  .cats-block { width: 100%; display: flex; flex-direction: column; align-items: center; gap: 22px; }
+  .cats-title {
+    margin: 0;
+    color: var(--leaf);
+    font-family: var(--font-script);
+    font-weight: 400;
+    font-size: clamp(2rem, 6.5vw, 2.6rem);
+    line-height: 1.15;
+  }
+  .cats {
+    width: 100%;
+    max-width: 800px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 26px 18px;
+  }
+  @media (min-width: 760px) { .cats { grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); } }
+  .cat { min-width: 0; margin: 0; display: flex; flex-direction: column; gap: 12px; }
+  .cat img, .cat .no-photo {
+    display: block;
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    object-fit: cover;
+    border: 6px solid var(--card);
+    background: var(--card);
+    box-shadow: 0 10px 22px -12px var(--shadow), 0 0 0 1px var(--line);
+  }
+  .cat .no-photo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    outline: 1.5px dashed var(--line-strong);
+    outline-offset: -14px;
+    font-size: 0.875rem;
+    opacity: 0.75;
+  }
+  .cat figcaption { display: flex; flex-direction: column; gap: 4px; text-align: center; }
+  .cat figcaption strong { font-family: var(--font-caps); font-weight: 600; font-size: 1.15rem; overflow-wrap: anywhere; }
+  .cat figcaption p { margin: 0; font-size: 0.9375rem; line-height: 1.5; overflow-wrap: anywhere; }
+  .photo-row { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
+  .photo-row img { width: 96px; height: 96px; object-fit: cover; border: 4px solid var(--field); box-shadow: 0 0 0 1px var(--line-strong); }
+  input[type="file"] { max-width: 100%; font: inherit; font-size: 0.9375rem; }
+
+  /* ---------- superlatives ---------- */
+  .awards { padding-inline: clamp(20px, 6vw, 72px); padding-block: 0 56px; }
+  .award-list {
+    list-style: none;
+    max-width: 780px;
+    margin: 0 auto;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+  }
+  .award-list li {
+    padding: 10px 18px;
+    border: 1.5px solid var(--line-strong);
+    border-radius: 22px;
+    background: var(--card);
+    font-family: var(--font-smallcaps);
+    font-size: 1.05rem;
+    line-height: 1.25;
+    letter-spacing: 0.02em;
+    text-align: center;
+    overflow-wrap: anywhere;
+  }
+  .award-list li small {
+    display: block;
+    margin-top: 3px;
+    font-family: var(--font-text);
+    font-size: 0.8125rem;
+    letter-spacing: 0;
+    opacity: 0.8;
+  }
+  .award-list li::before {
+    content: "";
+    display: inline-block;
+    width: 8px; height: 8px;
+    margin-right: 10px;
+    border-radius: 50%;
+    background: var(--plumeria);
+    vertical-align: 0.12em;
+  }
+
+  /* ---------- logistics ---------- */
+  .details { max-width: 640px; margin-inline: auto; display: flex; flex-direction: column; border-bottom: 1px solid var(--line); }
+  .detail { display: flex; flex-direction: column; gap: 12px; padding: 22px 2px 26px; border-top: 1px solid var(--line); }
+  .detail h3 { margin: 0; font-family: var(--font-caps); font-weight: 600; font-size: 1.35rem; line-height: 1.3; }
+  .detail .body { display: flex; flex-direction: column; gap: 12px; }
+  .soon { font-style: italic; opacity: 0.7; }
+  .sheet p a { color: var(--monstera); text-decoration-color: var(--leaf); text-underline-offset: 3px; overflow-wrap: anywhere; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .button, .booth { transition: none; }
+    .stage .quote { transition: none; }
+    .dress-link { transition: none; }
+  }
+</style>
+</head>
+<body>
+
+<main class="sheet" id="sheet">
+  <nav class="tabs" aria-label="Site sections">
+    <a href="#home" data-tab="home" aria-current="page">Home</a>
+    <a href="#story" data-tab="story">Our Story</a>
+    <a href="#logistics" data-tab="logistics">Logistics</a>
+    <a href="#dress" data-tab="dress">Dress Code</a>
+    <a href="#faq" data-tab="faq">FAQ</a>
+    <a href="#know" data-tab="know">Good to Know</a>
+    <a href="#rsvp" data-tab="rsvp">RSVP</a>
+    <a href="#photos" data-tab="photos">Photos</a>
+    <a href="#admin" data-tab="admin" hidden>Admin</a>
+  </nav>
+  <img class="band canopy" src="img/canopy.jpg" width="1800" height="585" alt="">
+
+  <section class="hero" aria-labelledby="title" data-view="home">
+    <div class="lettering">
+      <h1 id="title">
+        <span class="names">Katie &amp; Michael’s</span>
+        <span class="hea">Happily Ever After</span>
+        <span class="party">Party</span>
+      </h1>
+
+      <p class="invite-lines">
+        <span>Join us February 20, 2027</span>
+        <span>Our home</span>
+        <span>Naples, Florida</span>
+        <span>3 PM</span>
+      </p>
+
+      <p class="meta"><span>Saturday</span><span id="countdown" hidden></span></p>
+      <p class="note">The street address is on your invitation.</p>
+
+      <div class="cta">
+        <a class="button" href="#rsvp">Click here to RSVP</a>
+        <p class="quip">Or don’t. You can still come, but you may not get much food.</p>
+      </div>
+    </div>
+
+    <figure class="booth" aria-label="Photo-booth strip of Katie and Michael">
+      <img src="img/booth-1.jpg" width="288" height="359" alt="Katie and Michael cheek to cheek in a photo booth">
+      <img src="img/booth-2.jpg" width="288" height="408" alt="Katie and Michael kissing">
+      <img src="img/booth-3.jpg" width="288" height="398" alt="Michael shouting happily while Katie shows her ring">
+      <img src="img/booth-4.jpg" width="288" height="387" alt="Michael kissing Katie on the cheek as she laughs">
+    </figure>
+  </section>
+
+  <div class="dress-band" data-view="home">
+    <a class="dress-link" href="#dress">
+      <span class="eyebrow">Dress code</span>
+      <span class="dress-line">Hawaiian shirts and tiki shenanigans encouraged</span>
+      <span class="dress-go">See the dress code</span>
+    </a>
+  </div>
+
+  <section class="story" id="story" aria-labelledby="story-title" data-view="story">
+    <header>
+      <h2 id="story-title">Our Story</h2>
+    </header>
+    <div class="chapters" id="story-chapters" hidden></div>
+    <p class="placeholder" id="story-placeholder">The story loads here.</p>
+  </section>
+
+  <section class="awards" id="awards" aria-labelledby="awards-title" data-view="home">
+    <header>
+      <p class="eyebrow">Announced at the end of the party</p>
+      <h2 id="awards-title">Superlatives</h2>
+    </header>
+    <ul class="award-list" id="awards-list" hidden></ul>
+    <p class="placeholder" id="awards-placeholder">The superlatives load here.</p>
+  </section>
+
+  <section class="jokes" id="jokes" aria-labelledby="jokes-title" data-view="home">
+    <header>
+      <p class="eyebrow">Quotes and inside jokes</p>
+      <h2 id="jokes-title">Things we say</h2>
+    </header>
+    <p class="hint" id="jokes-hint" hidden>Tap one for the story behind it.</p>
+    <div class="stage" id="jokes-stage" hidden>
+      <div class="cell"></div><div class="cell"></div><div class="cell"></div>
+      <div class="cell"></div><div class="cell"></div><div class="cell"></div>
+    </div>
+    <ul class="all-quotes" id="jokes-all" hidden></ul>
+    <p class="placeholder" id="jokes-placeholder">The quotes load here.</p>
+    <button class="mini" type="button" id="jokes-toggle" hidden>Show them all</button>
+  </section>
+
+  <section class="logistics" id="logistics" aria-labelledby="logistics-title" data-view="logistics">
+    <header>
+      <h2 id="logistics-title">Logistics</h2>
+    </header>
+    <div class="details" id="details-list" hidden></div>
+    <p class="placeholder" id="details-placeholder">The details load here.</p>
+  </section>
+
+  <section class="dress-page" id="dress" aria-labelledby="dress-title" data-view="dress">
+    <header>
+      <p class="eyebrow">What to wear</p>
+      <h2 id="dress-title">Dress Code</h2>
+    </header>
+    <p class="dress-big">Hawaiian shirts and tiki shenanigans encouraged</p>
+    <div class="prose" id="dress-body" hidden></div>
+    <p class="placeholder" id="dress-placeholder" hidden>Only the invitation line so far. Add more in Admin.</p>
+  </section>
+
+  <section class="faq" id="faq" aria-labelledby="faq-title" data-view="faq">
+    <header>
+      <p class="eyebrow">You asked</p>
+      <h2 id="faq-title">Questions</h2>
+    </header>
+    <div class="details" id="faq-list" hidden></div>
+    <p class="placeholder" id="faq-placeholder">The questions load here.</p>
+  </section>
+
+  <section class="know" id="know" aria-labelledby="know-title" data-view="know">
+    <header>
+      <h2 id="know-title">Good to Know</h2>
+    </header>
+    <ul class="notes" id="notes-list" hidden></ul>
+    <div class="cats-block" id="cats-block" hidden>
+      <h3 class="cats-title">Meet the cats</h3>
+      <div class="cats" id="cats-grid"></div>
+    </div>
+    <p class="placeholder" id="know-placeholder">Good-to-know notes load here.</p>
+  </section>
+
+  <section class="rsvp" id="rsvp" aria-labelledby="rsvp-title" data-view="rsvp">
+    <header>
+      <p class="eyebrow">RSVP</p>
+      <h2 id="rsvp-title">Let us know</h2>
+    </header>
+
+    <div class="card">
+      <form id="rsvp-form" novalidate>
+        <div class="field">
+          <label class="q" for="rsvp-name">Your name</label>
+          <input type="text" id="rsvp-name" name="name" autocomplete="name">
+          <p class="error" id="rsvp-name-error" hidden>Add your name so we know who is replying.</p>
+        </div>
+
+        <fieldset class="field">
+          <legend class="q">Will you be there?</legend>
+          <div class="choices">
+            <label class="choice" for="rsvp-yes"><input type="radio" id="rsvp-yes" name="attending" value="yes"> Yes, count me in</label>
+            <label class="choice" for="rsvp-no"><input type="radio" id="rsvp-no" name="attending" value="no"> Sorry, can’t make it</label>
+          </div>
+          <p class="error" id="rsvp-attending-error" hidden>Choose yes or no.</p>
+        </fieldset>
+
+        <div class="field" id="rsvp-count-field">
+          <label class="q" for="rsvp-count">How many in your party, counting you?</label>
+          <div class="stepper">
+            <button type="button" id="rsvp-count-down" aria-label="One fewer">&minus;</button>
+            <input type="number" id="rsvp-count" name="count" min="1" max="20" value="1" inputmode="numeric">
+            <button type="button" id="rsvp-count-up" aria-label="One more">+</button>
+          </div>
+        </div>
+
+        <p class="error" id="rsvp-send-error" hidden></p>
+        <div class="actions">
+          <button class="button" type="submit" id="rsvp-send">Send RSVP</button>
+        </div>
+      </form>
+
+      <div class="reply" id="rsvp-reply" hidden>
+        <span class="tag">Saved</span>
+        <p><strong>Thank you!</strong> Katie and Michael have your reply:</p>
+        <p class="summary" id="rsvp-summary"></p>
+        <p class="sub-note">Plans changed? Send it again with the same name and it replaces this one.</p>
+        <div class="actions">
+          <button class="button quiet" type="button" id="rsvp-edit">Change reply</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="photos" id="photos" aria-labelledby="photos-title" data-view="photos">
+    <header>
+      <p class="eyebrow">Photos</p>
+      <h2 id="photos-title">Share your pictures</h2>
+    </header>
+
+    <div class="card">
+      <p>Share your photos and videos from the party. Upload as many as you like, during the party or after.</p>
+      <form id="upload-form" novalidate>
+        <div class="field">
+          <label class="q" for="upload-name">Your name (optional)</label>
+          <input type="text" id="upload-name" maxlength="120" autocomplete="name">
+        </div>
+        <div class="field">
+          <label class="q" for="upload-files">Photos and videos</label>
+          <input type="file" id="upload-files" accept="image/*,video/*" multiple>
+        </div>
+        <progress id="upload-progress" max="100" value="0" hidden></progress>
+        <p class="status" id="upload-status" hidden></p>
+        <div class="actions">
+          <button class="button" type="submit" id="upload-send">Upload</button>
+        </div>
+      </form>
+    </div>
+  </section>
+
+  <section class="login" id="login" aria-labelledby="login-title" data-view="login" hidden>
+    <header>
+      <p class="eyebrow">Editors only</p>
+      <h2 id="login-title">Admin</h2>
+    </header>
+    <div class="card">
+      <form id="login-form" novalidate>
+        <div class="field">
+          <label class="q" for="login-password">Password</label>
+          <input type="password" id="login-password" autocomplete="current-password">
+        </div>
+        <p class="status bad" id="login-status" hidden></p>
+        <div class="actions">
+          <button class="button" type="submit" id="login-submit">Log in</button>
+        </div>
+      </form>
+    </div>
+  </section>
+
+  <section class="admin" id="admin" aria-labelledby="admin-title" data-view="admin" hidden>
+    <header>
+      <p class="eyebrow">Editors only</p>
+      <h2 id="admin-title">Admin</h2>
+    </header>
+    <div class="actions">
+      <button class="button quiet" type="button" id="admin-close">Back to the site</button>
+      <button class="button quiet" type="button" id="admin-logout">Log out</button>
+    </div>
+
+    <div class="card">
+      <h3>RSVPs</h3>
+      <p class="sub" id="admin-rsvp-summary">Loading replies.</p>
+      <div class="actions">
+        <button class="mini" type="button" id="admin-rsvp-refresh">Refresh</button>
+        <a class="mini" href="/api/admin/rsvps.csv" download>Download spreadsheet</a>
+      </div>
+      <ul class="rows" id="admin-rsvp-rows"></ul>
+    </div>
+
+    <div class="card">
+      <h3>Guest photos</h3>
+      <p class="sub" id="admin-upload-summary">Loading photos.</p>
+      <div class="actions">
+        <button class="mini" type="button" id="admin-upload-refresh">Refresh</button>
+      </div>
+      <div class="thumbs" id="admin-upload-grid"></div>
+    </div>
+
+    <div class="card">
+      <h3>Quotes and inside jokes</h3>
+      <p class="sub">Each one fades in and out on the site. Guests tap it to read the story.</p>
+      <form id="admin-quote-form" novalidate>
+        <div class="field">
+          <label class="q" for="admin-quote-text">The quote or joke</label>
+          <input type="text" id="admin-quote-text" maxlength="200" autocomplete="off">
+        </div>
+        <div class="field">
+          <label class="q" for="admin-quote-story">The story behind it</label>
+          <textarea id="admin-quote-story"></textarea>
+        </div>
+        <p class="status" id="admin-quote-status" hidden></p>
+        <div class="actions">
+          <button class="button" type="submit" id="admin-quote-save">Add quote</button>
+          <button class="button quiet" type="button" id="admin-quote-cancel" hidden>Cancel</button>
+        </div>
+      </form>
+      <ul class="rows" id="admin-quote-rows"></ul>
+    </div>
+
+    <div class="card">
+      <h3>Logistics sections</h3>
+      <p class="sub">Hotels, parking, menu and anything else. An empty section shows as "Details to come."</p>
+      <form id="admin-detail-form" novalidate>
+        <div class="field">
+          <label class="q" for="admin-detail-title">Section title</label>
+          <input type="text" id="admin-detail-title" maxlength="120" autocomplete="off">
+        </div>
+        <div class="field">
+          <label class="q" for="admin-detail-position">Position</label>
+          <input class="narrow" type="number" id="admin-detail-position" min="1" step="1" inputmode="numeric">
+        </div>
+        <div class="field">
+          <label class="q" for="admin-detail-body">Text</label>
+          <textarea class="tall" id="admin-detail-body"></textarea>
+        </div>
+        <p class="status" id="admin-detail-status" hidden></p>
+        <div class="actions">
+          <button class="button" type="submit" id="admin-detail-save">Add section</button>
+          <button class="button quiet" type="button" id="admin-detail-cancel" hidden>Cancel</button>
+        </div>
+      </form>
+      <ul class="rows" id="admin-detail-rows"></ul>
+    </div>
+
+    <div class="card">
+      <h3>Superlatives</h3>
+      <p class="sub">Shown on the Home tab in position order.</p>
+      <form id="admin-award-form" novalidate>
+        <div class="field">
+          <label class="q" for="admin-award-title">Superlative</label>
+          <input type="text" id="admin-award-title" maxlength="120" autocomplete="off">
+        </div>
+        <div class="field">
+          <label class="q" for="admin-award-position">Position</label>
+          <input class="narrow" type="number" id="admin-award-position" min="1" step="1" inputmode="numeric">
+        </div>
+        <div class="field">
+          <label class="q" for="admin-award-body">What it is for (optional)</label>
+          <textarea id="admin-award-body"></textarea>
+        </div>
+        <p class="status" id="admin-award-status" hidden></p>
+        <div class="actions">
+          <button class="button" type="submit" id="admin-award-save">Add superlative</button>
+          <button class="button quiet" type="button" id="admin-award-cancel" hidden>Cancel</button>
+        </div>
+      </form>
+      <ul class="rows" id="admin-award-rows"></ul>
+    </div>
+
+    <div class="card">
+      <h3>FAQ</h3>
+      <p class="sub">Questions show in position order on the FAQ tab.</p>
+      <form id="admin-faq-form" novalidate>
+        <div class="field">
+          <label class="q" for="admin-faq-title">Question</label>
+          <input type="text" id="admin-faq-title" maxlength="200" autocomplete="off">
+        </div>
+        <div class="field">
+          <label class="q" for="admin-faq-position">Position</label>
+          <input class="narrow" type="number" id="admin-faq-position" min="1" step="1" inputmode="numeric">
+        </div>
+        <div class="field">
+          <label class="q" for="admin-faq-body">Answer</label>
+          <textarea id="admin-faq-body"></textarea>
+        </div>
+        <p class="status" id="admin-faq-status" hidden></p>
+        <div class="actions">
+          <button class="button" type="submit" id="admin-faq-save">Add question</button>
+          <button class="button quiet" type="button" id="admin-faq-cancel" hidden>Cancel</button>
+        </div>
+      </form>
+      <ul class="rows" id="admin-faq-rows"></ul>
+    </div>
+
+    <div class="card">
+      <h3>Good to know notes</h3>
+      <p class="sub">Short notes at the top of the Good to Know tab.</p>
+      <form id="admin-note-form" novalidate>
+        <div class="field">
+          <label class="q" for="admin-note-title">The note</label>
+          <input type="text" id="admin-note-title" maxlength="200" autocomplete="off">
+        </div>
+        <div class="field">
+          <label class="q" for="admin-note-position">Position</label>
+          <input class="narrow" type="number" id="admin-note-position" min="1" step="1" inputmode="numeric">
+        </div>
+        <div class="field">
+          <label class="q" for="admin-note-body">More detail (optional)</label>
+          <textarea id="admin-note-body"></textarea>
+        </div>
+        <p class="status" id="admin-note-status" hidden></p>
+        <div class="actions">
+          <button class="button" type="submit" id="admin-note-save">Add note</button>
+          <button class="button quiet" type="button" id="admin-note-cancel" hidden>Cancel</button>
+        </div>
+      </form>
+      <ul class="rows" id="admin-note-rows"></ul>
+    </div>
+
+    <div class="card">
+      <h3>The cats</h3>
+      <p class="sub">Each cat shows with a photo and a blurb on the Good to Know tab. Photos are shrunk before saving.</p>
+      <form id="admin-cat-form" novalidate>
+        <div class="field">
+          <label class="q" for="admin-cat-title">Name</label>
+          <input type="text" id="admin-cat-title" maxlength="80" autocomplete="off">
+        </div>
+        <div class="field">
+          <label class="q" for="admin-cat-position">Position</label>
+          <input class="narrow" type="number" id="admin-cat-position" min="1" step="1" inputmode="numeric">
+        </div>
+        <div class="field">
+          <label class="q" for="admin-cat-body">Blurb</label>
+          <textarea id="admin-cat-body"></textarea>
+        </div>
+        <div class="field">
+          <label class="q" for="admin-cat-photo">Photo</label>
+          <div class="photo-row">
+            <img id="admin-cat-preview" alt="Chosen photo" hidden>
+            <input type="file" id="admin-cat-photo" accept="image/*">
+            <button class="mini" type="button" id="admin-cat-photo-remove" hidden>Remove photo</button>
+          </div>
+        </div>
+        <p class="status" id="admin-cat-status" hidden></p>
+        <div class="actions">
+          <button class="button" type="submit" id="admin-cat-save">Add cat</button>
+          <button class="button quiet" type="button" id="admin-cat-cancel" hidden>Cancel</button>
+        </div>
+      </form>
+      <ul class="rows" id="admin-cat-rows"></ul>
+    </div>
+
+    <div class="card">
+      <h3>Dress code details</h3>
+      <p class="sub">Shows on the Dress Code tab, under the line from the invitation.</p>
+      <form id="admin-dress-form" novalidate>
+        <div class="field">
+          <label class="q" for="admin-dress-body">Text</label>
+          <textarea id="admin-dress-body"></textarea>
+        </div>
+        <p class="status" id="admin-dress-status" hidden></p>
+        <div class="actions">
+          <button class="button" type="submit" id="admin-dress-save">Save dress code</button>
+        </div>
+      </form>
+    </div>
+
+    <div class="card">
+      <h3>Our Story chapters</h3>
+      <p class="sub">Chapters show in position order. Leave a blank line between paragraphs.</p>
+      <form id="admin-chapter-form" novalidate>
+        <div class="field">
+          <label class="q" for="admin-chapter-title">Chapter title</label>
+          <input type="text" id="admin-chapter-title" maxlength="120" autocomplete="off">
+        </div>
+        <div class="field">
+          <label class="q" for="admin-chapter-position">Position</label>
+          <input class="narrow" type="number" id="admin-chapter-position" min="1" step="1" inputmode="numeric">
+        </div>
+        <div class="field">
+          <label class="q" for="admin-chapter-body">Text</label>
+          <textarea class="tall" id="admin-chapter-body"></textarea>
+        </div>
+        <p class="status" id="admin-chapter-status" hidden></p>
+        <div class="actions">
+          <button class="button" type="submit" id="admin-chapter-save">Add chapter</button>
+          <button class="button quiet" type="button" id="admin-chapter-cancel" hidden>Cancel</button>
+        </div>
+      </form>
+      <ul class="rows" id="admin-chapter-rows"></ul>
+    </div>
+  </section>
+
+  <img class="band" src="img/floor.jpg" width="1800" height="546" alt="">
+</main>
+
+<dialog class="pop" id="pop" aria-labelledby="pop-quote">
+  <div class="pop-inner">
+    <p class="eyebrow">The story behind</p>
+    <p class="pop-quote" id="pop-quote"></p>
+    <div class="pop-story" id="pop-story"></div>
+    <div class="actions"><button class="button quiet" type="button" id="pop-close">Close</button></div>
+  </div>
+</dialog>
+
+<script>
+(function () {
+  // Days until the party, counted in the visitor's own calendar days.
+  var out = document.getElementById('countdown');
+  var now = new Date();
+  var today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  var days = Math.round((new Date(2027, 1, 20) - today) / 86400000);
+  if (days > 1) out.textContent = days + ' days to go';
+  else if (days === 1) out.textContent = 'Tomorrow';
+  else if (days === 0) out.textContent = 'Today';
+  if (days >= 0) out.hidden = false;
+
+  var form = document.getElementById('rsvp-form');
+  var reply = document.getElementById('rsvp-reply');
+  var nameInput = document.getElementById('rsvp-name');
+  var nameError = document.getElementById('rsvp-name-error');
+  var attendingError = document.getElementById('rsvp-attending-error');
+  var yes = document.getElementById('rsvp-yes');
+  var no = document.getElementById('rsvp-no');
+  var countField = document.getElementById('rsvp-count-field');
+  var count = document.getElementById('rsvp-count');
+
+  function clampCount(n) {
+    n = parseInt(n, 10);
+    if (isNaN(n) || n < 1) n = 1;
+    if (n > 20) n = 20;
+    return n;
+  }
+  function syncCountField() { countField.hidden = no.checked; }
+
+  document.getElementById('rsvp-count-down').addEventListener('click', function () { count.value = clampCount(clampCount(count.value) - 1); });
+  document.getElementById('rsvp-count-up').addEventListener('click', function () { count.value = clampCount(clampCount(count.value) + 1); });
+  count.addEventListener('change', function () { count.value = clampCount(count.value); });
+  yes.addEventListener('change', function () { syncCountField(); attendingError.hidden = true; });
+  no.addEventListener('change', function () { syncCountField(); attendingError.hidden = true; });
+  nameInput.addEventListener('input', function () { nameError.hidden = true; });
+  syncCountField();
+
+  form.addEventListener('submit', function (event) {
+    event.preventDefault();
+    var name = nameInput.value.trim();
+    var answered = yes.checked || no.checked;
+    var sendError = document.getElementById('rsvp-send-error');
+    var send = document.getElementById('rsvp-send');
+    nameError.hidden = name !== '';
+    attendingError.hidden = answered;
+    sendError.hidden = true;
+    if (name === '') { nameInput.focus(); return; }
+    if (!answered) { yes.focus(); return; }
+
+    var n = clampCount(count.value);
+    send.disabled = true;
+    fetch('/api/rsvp', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name: name, attending: yes.checked ? 'yes' : 'no', count: n })
+    }).then(function (r) {
+      return r.json().catch(function () { return {}; }).then(function (out) {
+        if (!r.ok) throw new Error(out.error || 'Your reply did not save. Try again in a moment.');
+      });
+    }).then(function () {
+      var line = yes.checked
+        ? name + ' \u00b7 Coming \u00b7 ' + (n === 1 ? 'Party of 1' : 'Party of ' + n)
+        : name + ' \u00b7 Can\u2019t make it';
+      document.getElementById('rsvp-summary').textContent = line;
+      form.hidden = true;
+      reply.hidden = false;
+    }).catch(function (error) {
+      sendError.textContent = error.message;
+      sendError.hidden = false;
+    }).then(function () { send.disabled = false; });
+  });
+
+  document.getElementById('rsvp-edit').addEventListener('click', function () {
+    reply.hidden = true;
+    form.hidden = false;
+    nameInput.focus();
+  });
+})();
+</script>
+
+<script>
+(function () {
+  'use strict';
+  // Stands in for the preview's shared store: the same calls, backed by this site's own API.
+  let content = null, loading = null;
+  const listeners = {}, docListeners = {};
+  const codeFor = (status) => status === 401 || status === 403 ? 'not_granted'
+    : status === 413 ? 'quota_exceeded' : status === 400 ? 'invalid_argument' : 'unavailable';
+  const rows = (c) => (content && content[c]) || [];
+  const strip = (row) => { const copy = Object.assign({}, row); delete copy.id; return copy; };
+  const snap = (c) => {
+    const list = rows(c);
+    return { docs: list.map((row) => ({ id: row.id, exists: true, data: () => strip(row) })), size: list.length, empty: !list.length };
+  };
+  const dsnap = (c, id) => {
+    const row = rows(c).find((r) => r.id === id);
+    return row ? { id: id, exists: true, data: () => strip(row) } : { id: id, exists: false, data: () => undefined };
+  };
+  function emitAll() {
+    Object.keys(listeners).forEach((c) => listeners[c].forEach((l) => l.next(snap(c))));
+    Object.keys(docListeners).forEach((k) => { const [c, id] = k.split('/'); docListeners[k].forEach((l) => l.next(dsnap(c, id))); });
+  }
+  async function load() {
+    const r = await fetch('/api/content', { cache: 'no-store' });
+    if (!r.ok) throw { code: 'unavailable' };
+    content = await r.json();
+    emitAll();
+  }
+  function ensure() {
+    if (!loading) {
+      loading = load().catch((error) => {
+        Object.values(listeners).concat(Object.values(docListeners)).forEach((ls) => ls.forEach((l) => l.error && l.error(error)));
+      });
+    }
+    return loading;
+  }
+  async function send(method, url, body) {
+    const r = await fetch(url, {
+      method: method,
+      headers: body ? { 'Content-Type': 'application/json' } : {},
+      body: body ? JSON.stringify(body) : undefined
+    });
+    if (!r.ok) throw { code: codeFor(r.status) };
+    const out = await r.json().catch(() => ({}));
+    await load();
+    return out;
+  }
+  function docRef(c, id) {
+    return {
+      id: id, path: c + '/' + id,
+      set: (data) => send('PUT', '/api/admin/' + c + '/' + encodeURIComponent(id), data).then(() => undefined),
+      delete: () => send('DELETE', '/api/admin/' + c + '/' + encodeURIComponent(id)).then(() => undefined),
+      onSnapshot(next, error) {
+        (docListeners[c + '/' + id] = docListeners[c + '/' + id] || []).push({ next: next, error: error });
+        if (content) setTimeout(() => next(dsnap(c, id)), 0); else ensure();
+        return () => {};
+      }
+    };
+  }
+  const db = {
+    collection: (c) => ({
+      path: c,
+      onSnapshot(next, error) {
+        (listeners[c] = listeners[c] || []).push({ next: next, error: error });
+        if (content) setTimeout(() => next(snap(c)), 0); else ensure();
+        return () => {};
+      },
+      add: (data) => send('POST', '/api/admin/' + c, data).then((out) => docRef(c, out.id)),
+      doc: (id) => docRef(c, id)
+    }),
+    doc: (p) => { const parts = p.split('/'); return docRef(parts[0], parts[1]); }
+  };
+  let session = null;
+  const getSession = () => session || (session = fetch('/api/session', { cache: 'no-store' })
+    .then((r) => r.json()).catch(() => ({ admin: false, uploads: false })));
+  const user = { canEdit: async () => !!(await getSession()).admin, isOwner: async () => !!(await getSession()).admin };
+  window.liveSession = getSession;
+  window.claude = { use: async (name) => (name === 'db' ? db : name === 'user' ? user : null) };
+})();
+</script>
+
+<script>
+(function () {
+  'use strict';
+  // Tabs, plus everything kept in the page's shared store so it can be edited from Admin
+  // without republishing: quotes, Our Story chapters, Logistics sections, dress code details.
+  const $ = (id) => document.getElementById(id);
+  const VIEWS = ['home', 'story', 'logistics', 'dress', 'faq', 'know', 'rsvp', 'photos', 'admin', 'login'];
+  const LISTS = {
+    quote: { coll: 'quotes' },
+    chapter: { coll: 'story', noun: 'chapter' },
+    detail: { coll: 'details', noun: 'section' },
+    faq: { coll: 'faq', noun: 'question' },
+    award: { coll: 'awards', noun: 'superlative' },
+    note: { coll: 'notes', noun: 'note' },
+    cat: { coll: 'cats', noun: 'cat' }
+  };
+  const state = {
+    db: null, canEdit: false, storeGone: false, view: 'home',
+    items: { quote: [], chapter: [], detail: [], faq: [], award: [], note: [], cat: [] },
+    ready: { quote: false, chapter: false, detail: false, faq: false, award: false, note: false, cat: false },
+    edit: { quote: null, chapter: null, detail: null, faq: null, award: null, note: null, cat: null },
+    dress: '', dressReady: false, dressDirty: false,
+    confirmDelete: null, showAll: false, busy: false
+  };
+  const reduceMotion = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+  const str = (v) => (typeof v === 'string' ? v : '');
+  const num = (v) => (typeof v === 'number' && isFinite(v) ? v : 0);
+  const pick = (list) => list[Math.floor(Math.random() * list.length)];
+  const excerpt = (t, n) => { t = t.replace(/\s+/g, ' ').trim(); return t.length > n ? t.slice(0, n - 1).trimEnd() + '…' : t; };
+
+  // Text only, with plain web addresses turned into links.
+  function fillText(node, text) {
+    const re = /https?:\/\/[^\s<>"']+/g;
+    let last = 0, m;
+    while ((m = re.exec(text))) {
+      const url = m[0].replace(/[.,;:!?)\]]+$/, '');
+      if (m.index > last) node.append(text.slice(last, m.index));
+      const a = document.createElement('a');
+      a.href = url; a.textContent = url; a.target = '_blank'; a.rel = 'noopener noreferrer';
+      node.append(a);
+      last = m.index + url.length; re.lastIndex = last;
+    }
+    if (last < text.length) node.append(text.slice(last));
+  }
+  function paragraphs(target, text) {
+    target.replaceChildren();
+    str(text).split(/\n\s*\n/).map((part) => part.trim()).filter(Boolean).forEach((part) => {
+      const p = document.createElement('p');
+      fillText(p, part);
+      target.appendChild(p);
+    });
+  }
+
+  /* ---------- tabs ---------- */
+  function available(view) {
+    if (view === 'admin') return state.canEdit && !!state.db;
+    if (view === 'login') return !state.canEdit;
+    if (view === 'story' || view === 'logistics' || view === 'faq' || view === 'know') return $(view).dataset.empty !== '1';
+    return true;
+  }
+  function applyVisibility() {
+    if (!available(state.view)) state.view = 'home';
+    document.querySelectorAll('[data-view]').forEach((el) => { el.hidden = el.dataset.view !== state.view || el.dataset.empty === '1'; });
+    document.querySelectorAll('.tabs a').forEach((a) => {
+      a.hidden = !available(a.dataset.tab);
+      if (a.dataset.tab === state.view) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current');
+    });
+    $('sheet').dataset.current = state.view;
+  }
+  function go(view, scroll) {
+    if (VIEWS.indexOf(view) < 0) return;
+    state.view = view;
+    applyVisibility();
+    if (state.view === 'admin') enterAdmin();
+    try { history.replaceState(null, '', '#' + state.view); } catch (error) { /* hash is a convenience only */ }
+    if (scroll) {
+      const top = $('sheet').getBoundingClientRect().top;
+      if (top < 0) window.scrollTo(0, window.scrollY + top);
+    }
+  }
+  document.addEventListener('click', (event) => {
+    const a = event.target.closest ? event.target.closest('a[href^="#"]') : null;
+    if (!a) return;
+    const view = a.getAttribute('href').slice(1);
+    if (VIEWS.indexOf(view) < 0) return;
+    event.preventDefault();
+    go(view, true);
+  });
+  window.addEventListener('hashchange', () => {
+    const view = location.hash.slice(1);
+    if (VIEWS.indexOf(view) >= 0 && view !== state.view) go(view, false);
+  });
+
+  /* ---------- Our Story ---------- */
+  let storyDrawn = false;
+  function renderStory() {
+    const section = $('story'), list = $('story-chapters'), ph = $('story-placeholder');
+    const items = state.items.chapter;
+    if (state.storeGone || (state.ready.chapter && !items.length && !state.canEdit)) { section.dataset.empty = '1'; applyVisibility(); return; }
+    delete section.dataset.empty;
+    if (!state.ready.chapter) { applyVisibility(); return; }
+    if (!items.length) {
+      list.hidden = true; ph.hidden = false;
+      ph.textContent = 'No chapters yet. Add the first one in Admin.';
+      applyVisibility(); return;
+    }
+    const open = new Set();
+    list.querySelectorAll('details[open]').forEach((d) => open.add(d.dataset.id));
+    list.replaceChildren(...items.map((chapter, index) => {
+      const d = document.createElement('details');
+      d.className = 'chapter';
+      d.dataset.id = chapter.id;
+      d.open = storyDrawn ? open.has(chapter.id) : index === 0;
+      const summary = document.createElement('summary');
+      summary.textContent = str(chapter.title) || 'Untitled chapter';
+      const body = document.createElement('div');
+      body.className = 'body';
+      paragraphs(body, chapter.body);
+      d.append(summary, body);
+      return d;
+    }));
+    storyDrawn = true;
+    list.hidden = false; ph.hidden = true;
+    applyVisibility();
+  }
+
+  /* ---------- Logistics and FAQ: open lists of titled blocks ---------- */
+  function renderBlocks(kind, sectionId, listId, placeholderId, emptyAdmin, emptyBody) {
+    const section = $(sectionId), list = $(listId), ph = $(placeholderId);
+    const items = state.items[kind];
+    if (state.storeGone || (state.ready[kind] && !items.length && !state.canEdit)) { section.dataset.empty = '1'; applyVisibility(); return; }
+    delete section.dataset.empty;
+    if (!state.ready[kind]) { applyVisibility(); return; }
+    if (!items.length) {
+      list.hidden = true; ph.hidden = false;
+      ph.textContent = emptyAdmin;
+      applyVisibility(); return;
+    }
+    list.replaceChildren(...items.map((item) => {
+      const article = document.createElement('article');
+      article.className = 'detail';
+      const h = document.createElement('h3');
+      h.textContent = str(item.title) || 'Untitled';
+      const body = document.createElement('div');
+      body.className = 'body';
+      paragraphs(body, item.body);
+      if (!body.children.length) {
+        const p = document.createElement('p');
+        p.className = 'soon'; p.textContent = emptyBody;
+        body.appendChild(p);
+      }
+      article.append(h, body);
+      return article;
+    }));
+    list.hidden = false; ph.hidden = true;
+    applyVisibility();
+  }
+  function renderDetails() { renderBlocks('detail', 'logistics', 'details-list', 'details-placeholder', 'No sections yet. Add the first one in Admin.', 'Details to come.'); }
+  function renderFaq() { renderBlocks('faq', 'faq', 'faq-list', 'faq-placeholder', 'No questions yet. Add the first one in Admin.', 'Answer to come.'); }
+
+  /* ---------- Good to know: notes and the cats ---------- */
+  function safePhoto(value) {
+    value = str(value);
+    return /^data:image\/(jpeg|png|webp);base64,[A-Za-z0-9+/=]+$/.test(value) ? value : '';
+  }
+  function renderKnow() {
+    const section = $('know'), notes = state.items.note, cats = state.items.cat;
+    const bothReady = state.ready.note && state.ready.cat;
+    if (state.storeGone || (bothReady && !notes.length && !cats.length && !state.canEdit)) { section.dataset.empty = '1'; applyVisibility(); return; }
+    delete section.dataset.empty;
+    if (!bothReady) { applyVisibility(); return; }
+    const ph = $('know-placeholder');
+    ph.hidden = notes.length > 0 || cats.length > 0;
+    if (!ph.hidden) ph.textContent = 'Nothing here yet. Add notes and cats in Admin.';
+    $('notes-list').replaceChildren(...notes.map((note) => {
+      const li = document.createElement('li');
+      li.className = 'gtk-note';
+      const strong = document.createElement('strong');
+      strong.textContent = str(note.title) || 'Untitled note';
+      li.appendChild(strong);
+      const body = document.createElement('div');
+      body.className = 'body';
+      paragraphs(body, note.body);
+      if (body.children.length) li.appendChild(body);
+      return li;
+    }));
+    $('notes-list').hidden = !notes.length;
+    $('cats-grid').replaceChildren(...cats.map((cat) => {
+      const figure = document.createElement('figure');
+      figure.className = 'cat';
+      const photo = safePhoto(cat.photo);
+      let picture;
+      if (photo) {
+        picture = document.createElement('img');
+        picture.src = photo;
+        picture.alt = 'Photo of ' + (str(cat.title) || 'a cat');
+      } else {
+        picture = document.createElement('div');
+        picture.className = 'no-photo';
+        picture.textContent = 'Photo to come';
+      }
+      const caption = document.createElement('figcaption');
+      const name = document.createElement('strong');
+      name.textContent = str(cat.title) || 'Unnamed';
+      caption.appendChild(name);
+      if (str(cat.body).trim()) {
+        const p = document.createElement('p');
+        fillText(p, str(cat.body).trim());
+        caption.appendChild(p);
+      }
+      figure.append(picture, caption);
+      return figure;
+    }));
+    $('cats-block').hidden = !cats.length;
+    applyVisibility();
+  }
+
+  /* ---------- Superlatives ---------- */
+  function renderAwards() {
+    const section = $('awards'), list = $('awards-list'), ph = $('awards-placeholder');
+    const items = state.items.award;
+    if (state.storeGone || (state.ready.award && !items.length && !state.canEdit)) { section.dataset.empty = '1'; applyVisibility(); return; }
+    delete section.dataset.empty;
+    if (!state.ready.award) { applyVisibility(); return; }
+    if (!items.length) {
+      list.hidden = true; ph.hidden = false;
+      ph.textContent = 'No superlatives yet. Add the first one in Admin.';
+      applyVisibility(); return;
+    }
+    list.replaceChildren(...items.map((item) => {
+      const li = document.createElement('li');
+      const name = document.createElement('span');
+      name.className = 'award-name';
+      name.textContent = str(item.title) || 'Untitled';
+      li.appendChild(name);
+      if (str(item.body).trim()) {
+        const why = document.createElement('small');
+        why.textContent = str(item.body).trim();
+        li.appendChild(why);
+      }
+      return li;
+    }));
+    list.hidden = false; ph.hidden = true;
+    applyVisibility();
+  }
+
+  /* ---------- Dress code ---------- */
+  function renderDress() {
+    const body = $('dress-body'), ph = $('dress-placeholder');
+    paragraphs(body, state.dress);
+    body.hidden = !body.children.length;
+    ph.hidden = !(state.canEdit && state.db && state.dressReady && !body.children.length);
+  }
+
+  /* ---------- quotes: fade in and out at random spots ---------- */
+  const cells = Array.from($('jokes-stage').children);
+  const timers = new Map();
+  let shuffleStarted = false;
+
+  function tone(id) { let n = 0; for (let i = 0; i < id.length; i++) n += id.charCodeAt(i); return n % 4; }
+  function quoteButton(q, inStage) {
+    const text = str(q.text);
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'quote tone-' + tone(q.id) + (text.length > 40 ? ' long' : '');
+    b.textContent = inStage ? excerpt(text, 110) : text;
+    b.addEventListener('click', () => openQuote(q.id));
+    return b;
+  }
+  function schedule(cell, delay) {
+    clearTimeout(timers.get(cell));
+    timers.set(cell, setTimeout(() => fill(cell), delay));
+  }
+  function clearCell(cell) {
+    clearTimeout(timers.get(cell));
+    cell.replaceChildren();
+    delete cell.dataset.qid; delete cell.dataset.qtext;
+    schedule(cell, 500 + Math.random() * 2500);
+  }
+  function fill(cell) {
+    const quotes = state.items.quote;
+    if ($('jokes-stage').hidden || cell.offsetParent === null || document.hidden || !quotes.length) { schedule(cell, 1500); return; }
+    const showing = new Set(cells.map((c) => c.dataset.qid).filter(Boolean));
+    const pool = quotes.filter((q) => !showing.has(q.id));
+    if (!pool.length) { schedule(cell, 2000); return; }
+    const q = pick(pool);
+    const b = quoteButton(q, true);
+    cell.style.justifyContent = pick(['flex-start', 'center', 'flex-end']);
+    cell.style.alignItems = pick(['flex-start', 'center', 'flex-end']);
+    b.style.transform = 'rotate(' + (Math.random() * 6 - 3).toFixed(1) + 'deg)';
+    cell.replaceChildren(b);
+    cell.dataset.qid = q.id; cell.dataset.qtext = str(q.text);
+    setTimeout(() => b.classList.add('on'), 40);
+    clearTimeout(timers.get(cell));
+    timers.set(cell, setTimeout(() => leave(cell, b), 5000 + Math.random() * 4000));
+  }
+  function leave(cell, b) {
+    if (b.matches(':hover') || b === document.activeElement || $('pop').open) {
+      timers.set(cell, setTimeout(() => leave(cell, b), 1500)); return;
+    }
+    b.classList.remove('on');
+    timers.set(cell, setTimeout(() => clearCell(cell), 950));
+  }
+  function renderQuotes() {
+    const section = $('jokes'), quotes = state.items.quote;
+    if (state.storeGone || (state.ready.quote && !quotes.length && !state.canEdit)) { section.dataset.empty = '1'; applyVisibility(); return; }
+    delete section.dataset.empty;
+    if (!state.ready.quote) { applyVisibility(); return; }
+    const has = quotes.length > 0;
+    const listMode = reduceMotion || state.showAll;
+    const ph = $('jokes-placeholder');
+    ph.hidden = has;
+    if (!has) ph.textContent = 'No quotes yet. Add the first one in Admin.';
+    $('jokes-hint').hidden = !has;
+    $('jokes-stage').hidden = !has || listMode;
+    $('jokes-all').hidden = !has || !listMode;
+    const toggle = $('jokes-toggle');
+    toggle.hidden = !has || reduceMotion;
+    toggle.textContent = state.showAll ? 'Back to the shuffle' : 'Show them all';
+    $('jokes-all').replaceChildren(...quotes.map((q) => {
+      const li = document.createElement('li');
+      li.appendChild(quoteButton(q, false));
+      return li;
+    }));
+    cells.forEach((cell) => {
+      if (!cell.dataset.qid) return;
+      const q = quotes.find((x) => x.id === cell.dataset.qid);
+      if (!q || str(q.text) !== cell.dataset.qtext) clearCell(cell);
+    });
+    if (has && !listMode && !shuffleStarted) {
+      shuffleStarted = true;
+      cells.forEach((cell, i) => schedule(cell, i * 450));
+    }
+    applyVisibility();
+  }
+  function openQuote(id) {
+    const q = state.items.quote.find((x) => x.id === id);
+    if (!q) return;
+    $('pop-quote').textContent = str(q.text);
+    const story = $('pop-story');
+    paragraphs(story, q.story);
+    if (!story.children.length) {
+      const p = document.createElement('p');
+      p.textContent = 'The story behind this one has not been written yet.';
+      story.appendChild(p);
+    }
+    const pop = $('pop');
+    if (pop.open) return;
+    if (typeof pop.showModal === 'function') pop.showModal(); else pop.setAttribute('open', '');
+  }
+  function closePop() { const pop = $('pop'); if (typeof pop.close === 'function') pop.close(); else pop.removeAttribute('open'); }
+  $('pop-close').addEventListener('click', closePop);
+  $('pop').addEventListener('click', (event) => { if (event.target === $('pop')) closePop(); });
+  $('jokes-toggle').addEventListener('click', () => { state.showAll = !state.showAll; renderQuotes(); });
+
+  const RENDER = { quote: renderQuotes, chapter: renderStory, detail: renderDetails, faq: renderFaq, award: renderAwards, note: renderKnow, cat: renderKnow };
+
+  /* ---------- admin ---------- */
+  function say(el, message, bad) { el.className = bad ? 'status bad' : 'status'; el.textContent = message; el.hidden = false; }
+  function fail(el, error) {
+    const code = error && error.code;
+    say(el, code === 'quota_exceeded' ? 'Storage is full. Delete something, then try again.'
+      : code === 'invalid_argument' ? 'That could not be saved. You may not have edit access here.'
+      : code === 'revoked' || code === 'not_granted' ? 'Editing is not available in this view.'
+      : 'That did not save. Try again in a moment.', true);
+  }
+  const el = (kind, part) => $('admin-' + kind + '-' + part);
+
+  let photoDraft; // undefined = unchanged, '' = removed, data URL = newly chosen
+  function showPhotoPreview(src) {
+    const img = $('admin-cat-preview');
+    if (src) { img.src = src; img.hidden = false; } else { img.removeAttribute('src'); img.hidden = true; }
+    $('admin-cat-photo-remove').hidden = !src;
+  }
+  function shrink(file) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onerror = () => reject(new Error('read'));
+      reader.onload = () => {
+        const img = new Image();
+        img.onerror = () => reject(new Error('decode'));
+        img.onload = () => {
+          let out = '';
+          for (const [side, quality] of [[720, 0.82], [560, 0.76], [420, 0.7]]) {
+            const scale = Math.min(1, side / Math.max(img.naturalWidth, img.naturalHeight));
+            const canvas = document.createElement('canvas');
+            canvas.width = Math.max(1, Math.round(img.naturalWidth * scale));
+            canvas.height = Math.max(1, Math.round(img.naturalHeight * scale));
+            canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
+            out = canvas.toDataURL('image/jpeg', quality);
+            if (out.length <= 180000) break;
+          }
+          if (out.length > 230000) reject(new Error('big')); else resolve(out);
+        };
+        img.src = reader.result;
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+  $('admin-cat-photo').addEventListener('change', async () => {
+    const input = $('admin-cat-photo');
+    const file = input.files && input.files[0];
+    if (!file) return;
+    try {
+      photoDraft = await shrink(file);
+      showPhotoPreview(photoDraft);
+      $('admin-cat-status').hidden = true;
+    } catch (error) {
+      input.value = '';
+      say($('admin-cat-status'), 'That photo could not be read. Try a JPEG or PNG.', true);
+    }
+  });
+  $('admin-cat-photo-remove').addEventListener('click', () => { photoDraft = ''; $('admin-cat-photo').value = ''; showPhotoPreview(''); });
+
+  function resetForm(kind) {
+    state.edit[kind] = null;
+    if (kind === 'cat') { photoDraft = undefined; $('admin-cat-photo').value = ''; showPhotoPreview(''); }
+    if (kind === 'quote') {
+      el(kind, 'text').value = ''; el(kind, 'story').value = '';
+      el(kind, 'save').textContent = 'Add quote';
+    } else {
+      el(kind, 'title').value = ''; el(kind, 'body').value = '';
+      el(kind, 'position').value = String(state.items[kind].reduce((m, c) => Math.max(m, num(c.position)), 0) + 1);
+      el(kind, 'save').textContent = 'Add ' + LISTS[kind].noun;
+    }
+    el(kind, 'cancel').hidden = true;
+  }
+  function pristine(kind) {
+    return !state.edit[kind] && !el(kind, 'title').value && !el(kind, 'body').value && !(kind === 'cat' && photoDraft !== undefined);
+  }
+  function rowButton(label, danger, onClick) {
+    const b = document.createElement('button');
+    b.type = 'button'; b.className = danger ? 'mini danger' : 'mini'; b.textContent = label;
+    b.addEventListener('click', onClick);
+    return b;
+  }
+  function renderRows(kind) {
+    el(kind, 'rows').replaceChildren(...state.items[kind].map((item) => {
+      const li = document.createElement('li'); li.className = 'row';
+      const what = document.createElement('div'); what.className = 'what';
+      const strong = document.createElement('strong');
+      const span = document.createElement('span');
+      if (kind === 'quote') {
+        strong.textContent = str(item.text) || 'Empty quote';
+        span.textContent = str(item.story) ? excerpt(str(item.story), 120) : 'No story yet';
+      } else {
+        strong.textContent = num(item.position) + '. ' + (str(item.title) || 'Untitled');
+        span.textContent = str(item.body) ? excerpt(str(item.body), 120) : 'No text yet';
+        span.hidden = kind === 'award' && !str(item.body);
+        if (kind === 'cat') span.textContent = (str(item.body) ? excerpt(str(item.body), 100) : 'No blurb yet') + (safePhoto(item.photo) ? ' \u00b7 photo added' : ' \u00b7 no photo');
+      }
+      what.append(strong, span);
+      const acts = document.createElement('div'); acts.className = 'acts';
+      const pending = state.confirmDelete && state.confirmDelete.kind === kind && state.confirmDelete.id === item.id;
+      if (pending) {
+        acts.append(
+          rowButton('Yes, delete', true, () => removeItem(kind, item.id)),
+          rowButton('Keep', false, () => { state.confirmDelete = null; renderRows(kind); })
+        );
+      } else {
+        acts.append(
+          rowButton('Edit', false, () => startEdit(kind, item)),
+          rowButton('Delete', false, () => { state.confirmDelete = { kind: kind, id: item.id }; Object.keys(LISTS).forEach(renderRows); })
+        );
+      }
+      li.append(what, acts);
+      return li;
+    }));
+  }
+  function startEdit(kind, item) {
+    state.edit[kind] = item.id;
+    if (kind === 'quote') {
+      el(kind, 'text').value = str(item.text); el(kind, 'story').value = str(item.story);
+    } else {
+      el(kind, 'title').value = str(item.title); el(kind, 'body').value = str(item.body);
+      el(kind, 'position').value = String(num(item.position));
+      if (kind === 'cat') { photoDraft = undefined; $('admin-cat-photo').value = ''; showPhotoPreview(safePhoto(item.photo)); }
+    }
+    el(kind, 'save').textContent = 'Save changes';
+    el(kind, 'cancel').hidden = false; el(kind, 'status').hidden = true;
+    el(kind, kind === 'quote' ? 'text' : 'title').focus();
+  }
+  async function removeItem(kind, id) {
+    if (!state.db || state.busy) return;
+    state.busy = true;
+    try {
+      await state.db.doc(LISTS[kind].coll + '/' + id).delete();
+      if (state.edit[kind] === id) resetForm(kind);
+      say(el(kind, 'status'), 'Deleted.', false);
+    } catch (error) { fail(el(kind, 'status'), error); }
+    state.confirmDelete = null; state.busy = false;
+    renderRows(kind);
+  }
+  function readForm(kind) {
+    const status = el(kind, 'status');
+    if (kind === 'quote') {
+      const text = el(kind, 'text').value.trim();
+      if (!text) { say(status, 'Type the quote or joke first.', true); el(kind, 'text').focus(); return null; }
+      const old = state.items.quote.find((q) => q.id === state.edit.quote);
+      return { text: text, story: el(kind, 'story').value.trim(), createdAt: old && num(old.createdAt) ? old.createdAt : Date.now() };
+    }
+    const title = el(kind, 'title').value.trim();
+    const position = parseInt(el(kind, 'position').value, 10);
+    if (!title) { say(status, 'Give it a title.', true); el(kind, 'title').focus(); return null; }
+    if (!(position >= 1)) { say(status, 'Position needs a number, 1 or higher.', true); el(kind, 'position').focus(); return null; }
+    const data = { title: title, body: el(kind, 'body').value.trim(), position: position };
+    if (kind === 'cat') {
+      const old = state.items.cat.find((c) => c.id === state.edit.cat);
+      data.photo = photoDraft !== undefined ? photoDraft : (old ? safePhoto(old.photo) : '');
+    }
+    return data;
+  }
+  Object.keys(LISTS).forEach((kind) => {
+    el(kind, 'form').addEventListener('submit', async (event) => {
+      event.preventDefault();
+      if (!state.db || state.busy) return;
+      const data = readForm(kind);
+      if (!data) return;
+      state.busy = true; el(kind, 'save').disabled = true;
+      try {
+        if (state.edit[kind]) { await state.db.doc(LISTS[kind].coll + '/' + state.edit[kind]).set(data); say(el(kind, 'status'), 'Saved.', false); }
+        else { await state.db.collection(LISTS[kind].coll).add(data); say(el(kind, 'status'), 'Added.', false); }
+        resetForm(kind);
+      } catch (error) { fail(el(kind, 'status'), error); }
+      state.busy = false; el(kind, 'save').disabled = false;
+    });
+    el(kind, 'cancel').addEventListener('click', () => { resetForm(kind); el(kind, 'status').hidden = true; });
+  });
+
+  $('admin-dress-body').addEventListener('input', () => { state.dressDirty = true; });
+  $('admin-dress-form').addEventListener('submit', async (event) => {
+    event.preventDefault();
+    if (!state.db || state.busy) return;
+    const status = $('admin-dress-status');
+    state.busy = true; $('admin-dress-save').disabled = true;
+    try {
+      await state.db.doc('pages/dress').set({ body: $('admin-dress-body').value.trim() });
+      state.dressDirty = false;
+      say(status, 'Saved.', false);
+    } catch (error) { fail(status, error); }
+    state.busy = false; $('admin-dress-save').disabled = false;
+  });
+
+  function enterAdmin() {
+    ['chapter', 'detail', 'faq', 'award', 'note', 'cat'].forEach((kind) => { if (pristine(kind)) resetForm(kind); });
+    if (!state.dressDirty) $('admin-dress-body').value = state.dress;
+    Object.keys(LISTS).forEach(renderRows);
+    document.dispatchEvent(new CustomEvent('admin-enter'));
+  }
+  $('admin-close').addEventListener('click', () => go('home', true));
+
+  /* ---------- store ---------- */
+  function renderAll() { renderStory(); renderDetails(); renderFaq(); renderAwards(); renderKnow(); renderQuotes(); renderDress(); }
+  function rowsOf(snap) { return snap.docs.map((d) => Object.assign({ id: d.id }, d.data() || {})); }
+  function gone() { state.storeGone = true; renderAll(); }
+  const byCreated = (a, b) => num(a.createdAt) - num(b.createdAt);
+  const byPosition = (a, b) => num(a.position) - num(b.position) || str(a.title).localeCompare(str(b.title));
+
+  async function start() {
+    const wanted = location.hash.slice(1) || (location.pathname === '/admin' ? 'admin' : '');
+    renderAll();
+    if (VIEWS.indexOf(wanted) >= 0) go(wanted, false);
+    const claude = window.claude;
+    if (!claude || typeof claude.use !== 'function') { gone(); return; }
+    let db = null, user = null;
+    try { [db, user] = await Promise.all([claude.use('db'), claude.use('user')]); } catch (error) { db = null; }
+    try { state.canEdit = user ? !!(await user.canEdit()) : false; } catch (error) { state.canEdit = false; }
+    if (!db) { gone(); return; }
+    state.db = db;
+    Object.keys(LISTS).forEach((kind) => {
+      db.collection(LISTS[kind].coll).onSnapshot((snap) => {
+        state.items[kind] = rowsOf(snap).sort(kind === 'quote' ? byCreated : byPosition);
+        state.ready[kind] = true;
+        RENDER[kind]();
+        if (state.view === 'admin') { renderRows(kind); if (kind !== 'quote' && pristine(kind)) resetForm(kind); }
+      }, gone);
+    });
+    db.doc('pages/dress').onSnapshot((snap) => {
+      const data = snap.exists ? snap.data() : null;
+      state.dress = data ? str(data.body) : '';
+      state.dressReady = true;
+      renderDress();
+      if (state.view === 'admin' && !state.dressDirty) $('admin-dress-body').value = state.dress;
+    }, gone);
+    renderAll();
+    if (wanted === 'admin' || wanted === 'login') go(state.canEdit ? 'admin' : 'login', false);
+  }
+  start();
+})();
+</script>
+
+<script>
+(function () {
+  'use strict';
+  // Live-only pieces: Admin login and logout, the RSVP list, guest photo review, and guest uploads.
+  const $ = (id) => document.getElementById(id);
+  const say = (el, text, bad) => { el.className = bad ? 'status bad' : 'status'; el.textContent = text; el.hidden = false; };
+  async function call(method, url, body) {
+    const r = await fetch(url, { method: method, headers: body ? { 'Content-Type': 'application/json' } : {}, body: body ? JSON.stringify(body) : undefined, cache: 'no-store' });
+    const out = await r.json().catch(() => ({}));
+    if (!r.ok) throw new Error(out.error || 'Something went wrong. Try again.');
+    return out;
+  }
+  const when = (iso) => { const d = new Date(iso); return isNaN(d) ? '' : d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' }); };
+  const mini = (label, danger, onClick) => {
+    const b = document.createElement('button');
+    b.type = 'button'; b.className = danger ? 'mini danger' : 'mini'; b.textContent = label;
+    b.addEventListener('click', onClick);
+    return b;
+  };
+
+  /* ---------- login and logout ---------- */
+  $('login-form').addEventListener('submit', async (event) => {
+    event.preventDefault();
+    const status = $('login-status'), button = $('login-submit');
+    const password = $('login-password').value;
+    if (!password) { say(status, 'Type the password first.', true); $('login-password').focus(); return; }
+    button.disabled = true;
+    try {
+      await call('POST', '/api/login', { password: password });
+      location.hash = 'admin';
+      location.reload();
+    } catch (error) {
+      say(status, error.message, true);
+      button.disabled = false;
+    }
+  });
+  $('admin-logout').addEventListener('click', async () => {
+    try { await call('POST', '/api/logout'); } catch (error) { /* the cookie is cleared either way */ }
+    location.href = '/';
+  });
+
+  /* ---------- RSVPs ---------- */
+  let rsvps = [], rsvpConfirm = null;
+  function drawRsvps() {
+    const yes = rsvps.filter((r) => r.attending === 'yes');
+    const people = yes.reduce((n, r) => n + (Number(r.count) || 0), 0);
+    const no = rsvps.length - yes.length;
+    $('admin-rsvp-summary').textContent = rsvps.length
+      ? rsvps.length + (rsvps.length === 1 ? ' reply' : ' replies') + ': ' + yes.length + ' coming (' + people + (people === 1 ? ' person' : ' people') + '), ' + no + ' can’t make it.'
+      : 'No replies yet.';
+    $('admin-rsvp-rows').replaceChildren(...rsvps.map((r) => {
+      const li = document.createElement('li'); li.className = 'row';
+      const what = document.createElement('div'); what.className = 'what';
+      const strong = document.createElement('strong'); strong.textContent = r.name || 'No name';
+      const span = document.createElement('span');
+      span.textContent = (r.attending === 'yes' ? 'Coming, party of ' + r.count : 'Can’t make it') + ' · ' + when(r.updatedAt);
+      what.append(strong, span);
+      const acts = document.createElement('div'); acts.className = 'acts';
+      if (rsvpConfirm === r.id) {
+        acts.append(
+          mini('Yes, delete', true, async () => {
+            try { await call('DELETE', '/api/admin/rsvps/' + encodeURIComponent(r.id)); rsvpConfirm = null; loadRsvps(); }
+            catch (error) { $('admin-rsvp-summary').textContent = error.message; }
+          }),
+          mini('Keep', false, () => { rsvpConfirm = null; drawRsvps(); })
+        );
+      } else {
+        acts.append(mini('Delete', false, () => { rsvpConfirm = r.id; drawRsvps(); }));
+      }
+      li.append(what, acts);
+      return li;
+    }));
+  }
+  async function loadRsvps() {
+    try { rsvps = await call('GET', '/api/admin/rsvps'); drawRsvps(); }
+    catch (error) { $('admin-rsvp-summary').textContent = error.message; }
+  }
+  $('admin-rsvp-refresh').addEventListener('click', loadRsvps);
+
+  /* ---------- guest photos (review) ---------- */
+  let uploads = [], uploadConfirm = null;
+  function drawUploads() {
+    $('admin-upload-summary').textContent = uploads.length
+      ? uploads.length + (uploads.length === 1 ? ' file' : ' files') + ' uploaded by guests.'
+      : 'No guest photos yet.';
+    $('admin-upload-grid').replaceChildren(...uploads.map((u) => {
+      const fig = document.createElement('figure'); fig.className = 'thumb';
+      if (/^image\//.test(u.type)) {
+        const img = document.createElement('img');
+        img.src = '/media/' + encodeURIComponent(u.id); img.alt = u.filename || 'Guest photo'; img.loading = 'lazy';
+        fig.appendChild(img);
+      } else {
+        const a = document.createElement('a');
+        a.href = '/media/' + encodeURIComponent(u.id); a.target = '_blank'; a.rel = 'noopener';
+        a.className = 'video'; a.textContent = 'Video: ' + (u.filename || 'open');
+        fig.appendChild(a);
+      }
+      const cap = document.createElement('figcaption');
+      cap.textContent = (u.by ? u.by + ' · ' : '') + when(u.createdAt);
+      const acts = document.createElement('div'); acts.className = 'acts';
+      if (uploadConfirm === u.id) {
+        acts.append(
+          mini('Yes, delete', true, async () => {
+            try { await call('DELETE', '/api/admin/uploads/' + encodeURIComponent(u.id)); uploadConfirm = null; loadUploads(); }
+            catch (error) { $('admin-upload-summary').textContent = error.message; }
+          }),
+          mini('Keep', false, () => { uploadConfirm = null; drawUploads(); })
+        );
+      } else {
+        acts.append(mini('Delete', false, () => { uploadConfirm = u.id; drawUploads(); }));
+      }
+      fig.append(cap, acts);
+      return fig;
+    }));
+  }
+  async function loadUploads() {
+    try { uploads = await call('GET', '/api/admin/uploads'); drawUploads(); }
+    catch (error) { $('admin-upload-summary').textContent = error.message; }
+  }
+  $('admin-upload-refresh').addEventListener('click', loadUploads);
+  document.addEventListener('admin-enter', () => { loadRsvps(); loadUploads(); });
+
+  /* ---------- guest upload form ---------- */
+  const form = $('upload-form'), files = $('upload-files'), status = $('upload-status'), bar = $('upload-progress'), send = $('upload-send');
+  (window.liveSession ? window.liveSession() : Promise.resolve({ uploads: false })).then((s) => {
+    if (!s.uploads) { send.disabled = true; files.disabled = true; say(status, 'Photo uploads are not switched on yet.', false); }
+  });
+  function sendOne(file, name) {
+    return new Promise((resolve, reject) => {
+      const data = new FormData();
+      data.append('name', name);
+      data.append('file', file, file.name);
+      const xhr = new XMLHttpRequest();
+      xhr.open('POST', '/api/upload');
+      xhr.upload.onprogress = (e) => { if (e.lengthComputable) bar.value = Math.round((e.loaded / e.total) * 100); };
+      xhr.onload = () => {
+        let out = {}; try { out = JSON.parse(xhr.responseText); } catch (error) { /* keep the empty object */ }
+        if (xhr.status >= 200 && xhr.status < 300) resolve(out); else reject(new Error(out.error || 'That upload did not go through.'));
+      };
+      xhr.onerror = () => reject(new Error('The connection dropped. Try again.'));
+      xhr.send(data);
+    });
+  }
+  form.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    const list = Array.from(files.files || []);
+    if (!list.length) { say(status, 'Choose at least one photo or video.', true); return; }
+    const name = $('upload-name').value.trim();
+    send.disabled = true; files.disabled = true; bar.hidden = false;
+    let ok = 0; const failed = [];
+    for (let i = 0; i < list.length; i++) {
+      say(status, 'Uploading ' + (i + 1) + ' of ' + list.length + '…', false);
+      bar.value = 0;
+      try { await sendOne(list[i], name); ok++; } catch (error) { failed.push(list[i].name + ': ' + error.message); }
+    }
+    bar.hidden = true; send.disabled = false; files.disabled = false;
+    if (ok) files.value = '';
+    say(status, failed.length
+      ? (ok ? ok + ' uploaded. ' : '') + 'These did not go through: ' + failed.join(' ')
+      : 'Thank you! ' + ok + (ok === 1 ? ' file' : ' files') + ' uploaded.', failed.length > 0);
+  });
+})();
+</script>
+</body>
+</html>
