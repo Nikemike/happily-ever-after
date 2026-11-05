@@ -18,7 +18,14 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import pg from 'pg';
+import os from 'node:os';
+import { spawn } from 'node:child_process';
+import { pipeline } from 'node:stream/promises';
 import Busboy from 'busboy';
+import sharp from 'sharp';
+import exifr from 'exifr';
+import ffmpegPath from 'ffmpeg-static';
+import UAParser from 'ua-parser-js';
 import { S3Client, DeleteObjectCommand, GetObjectCommand } from '@aws-sdk/client-s3';
 import { Upload } from '@aws-sdk/lib-storage';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
@@ -114,6 +121,7 @@ async function putObject(key, stream, contentType) {
     return;
   }
   const file = path.join(localDir, key.replace(/\//g, '_'));
+  if (Buffer.isBuffer(stream)) { fs.writeFileSync(file, stream); return; }
   await new Promise((resolve, reject) => {
     const out = fs.createWriteStream(file);
     stream.pipe(out);
@@ -125,6 +133,14 @@ async function putObject(key, stream, contentType) {
 async function deleteObject(key) {
   if (s3) { await s3.send(new DeleteObjectCommand({ Bucket: env.BUCKET, Key: key })); return; }
   if (localDir) fs.rmSync(path.join(localDir, key.replace(/\//g, '_')), { force: true });
+}
+async function getObjectToFile(key, file) {
+  if (s3) {
+    const out = await s3.send(new GetObjectCommand({ Bucket: env.BUCKET, Key: key }));
+    await pipeline(out.Body, fs.createWriteStream(file));
+    return;
+  }
+  fs.copyFileSync(path.join(localDir, key.replace(/\//g, '_')), file);
 }
 
 /* ---------------- helpers ---------------- */
@@ -179,6 +195,33 @@ function limit(name, max, windowMs) {
 setInterval(() => { const now = Date.now(); for (const [k, v] of hits) if (v.reset < now) hits.delete(k); }, 60_000).unref();
 
 const clean = (v, max) => (typeof v === 'string' ? v.trim().slice(0, max) : '');
+
+// What we record about the phone or computer that sent something (Admin only).
+// `hints` comes from the page: a random device ID kept on that device, screen size, and on
+// Chrome-based browsers the real model and OS version (their user-agent string hides them).
+function deviceTags(req, hints) {
+  if (typeof hints === 'string') { try { hints = JSON.parse(hints); } catch { hints = {}; } }
+  if (!hints || typeof hints !== 'object') hints = {};
+  const ua = String(req.headers['user-agent'] || '').slice(0, 400);
+  const p = UAParser(ua);
+  const model = clean(hints.model, 60) || [p.device.vendor, p.device.model].filter(Boolean).join(' ');
+  const osName = clean(hints.platform, 40) || p.os.name || '';
+  let osVersion = p.os.version || '';
+  const hv = clean(hints.platformVersion, 20);
+  if (hv && /android|mac/i.test(osName)) osVersion = hv.replace(/(\.0)+$/, '');
+  if (hv && /windows/i.test(osName)) osVersion = parseInt(hv, 10) >= 13 ? '11' : '10';
+  const browser = [p.browser.name, p.browser.major].filter(Boolean).join(' ');
+  const kind = p.device.type || 'computer';
+  return {
+    summary: [model || (kind === 'computer' ? 'Computer' : kind), [osName, osVersion].filter(Boolean).join(' '), browser].filter(Boolean).join(' · '),
+    model, os: osName, osVersion, browser, kind,
+    screen: clean(hints.screen, 24),
+    id: /^[A-Za-z0-9_-]{8,40}$/.test(hints.id || '') ? hints.id : '',
+    ip: req.ip || '',
+    forwardedFor: clean(req.headers['x-forwarded-for'], 200),
+    userAgent: ua,
+  };
+}
 
 /* ---------------- app ---------------- */
 
@@ -340,6 +383,7 @@ app.post('/api/rsvp', limit('rsvp', 30, 60 * 60_000), json, async (req, res) => 
   if (!req.is('multipart/form-data')) {
     const { reply, error } = checkRsvp(req.body);
     if (error) return res.status(400).json({ error });
+    reply.device = deviceTags(req, req.body?.device);
     try { res.json({ ok: true, ...(await saveRsvp(reply, new Map())) }); }
     catch (err) { console.error('rsvp', err); res.status(500).json({ error: 'Your reply did not save. Try again in a moment.' }); }
     return;
@@ -350,6 +394,7 @@ app.post('/api/rsvp', limit('rsvp', 30, 60 * 60_000), json, async (req, res) => 
   if (form.failed) return fail(400, 'The reply was interrupted. Try again.');
   const { reply, error } = checkRsvp(form.data);
   if (error) return fail(400, error);
+  reply.device = deviceTags(req, form.data?.device);
   if (form.problems.length) {
     const { index, why } = form.problems[0];
     const who = reply.guests[index]?.name || `paddler ${index + 1}`;
@@ -375,19 +420,31 @@ app.post('/api/upload', limit('upload', 60, 60 * 60_000), (req, res) => {
   if (!uploadsEnabled) return res.status(503).json({ error: 'Photo uploads are not switched on yet.' });
   let busboy;
   try {
-    busboy = Busboy({ headers: req.headers, limits: { files: MAX_FILES_PER_REQUEST, fileSize: MAX_UPLOAD_BYTES, fields: 5 } });
+    busboy = Busboy({ headers: req.headers, limits: { files: MAX_FILES_PER_REQUEST + 1, fileSize: MAX_UPLOAD_BYTES, fields: 5, fieldSize: 8 * 1024 } });
   } catch {
     return res.status(400).json({ error: 'Send the photos as a form upload.' });
   }
-  let by = '';
+  let by = '', hints = {}, preview = null;
   const saved = [], skipped = [], pending = [];
-  busboy.on('field', (name, value) => { if (name === 'name') by = clean(value, 120); });
+  const day = new Date().toISOString().slice(0, 10);
+  busboy.on('field', (name, value) => {
+    if (name === 'name') by = clean(value, 120);
+    if (name === 'device') { try { hints = JSON.parse(value); } catch { hints = {}; } }
+  });
   busboy.on('file', (field, stream, info) => {
     const type = (info.mimeType || '').toLowerCase();
+    // A JPEG copy the browser made of a photo the server cannot read itself (iPhone HEIC).
+    if (field === 'preview') {
+      if (type !== 'image/jpeg' || preview) { stream.resume(); return; }
+      const p = { key: `previews/${day}/${newId()}.jpg`, tooBig: false };
+      preview = p;
+      stream.on('limit', () => { p.tooBig = true; });
+      pending.push(putObject(p.key, stream, type).catch((error) => { console.error('preview', error); stream.resume(); p.failed = true; }));
+      return;
+    }
     if (!/^(image|video)\//.test(type)) { skipped.push(info.filename || 'file'); stream.resume(); return; }
     const id = newId();
     const ext = (path.extname(info.filename || '').toLowerCase().replace(/[^.a-z0-9]/g, '') || '').slice(0, 8);
-    const day = new Date().toISOString().slice(0, 10);
     const key = `uploads/${day}/${id}${ext}`;
     let size = 0, tooBig = false;
     stream.on('data', (chunk) => { size += chunk.length; });
@@ -396,15 +453,28 @@ app.post('/api/upload', limit('upload', 60, 60 * 60_000), (req, res) => {
       putObject(key, stream, type)
         .then(async () => {
           if (tooBig) { await deleteObject(key); skipped.push(info.filename || 'file'); return; }
-          await store.put('uploads', id, { key, type, size, filename: clean(info.filename, 200), by, createdAt: new Date().toISOString() });
+          await store.put('uploads', id, {
+            key, type, size, filename: clean(info.filename, 200), by, createdAt: new Date().toISOString(),
+            device: deviceTags(req, hints), status: 'processing',
+          });
           saved.push(id);
         })
-        .catch((error) => { console.error('upload', error); skipped.push(info.filename || 'file'); })
+        .catch((error) => { console.error('upload', error); stream.resume(); skipped.push(info.filename || 'file'); })
     );
   });
   busboy.on('error', (error) => { console.error('busboy', error); if (!res.headersSent) res.status(400).json({ error: 'The upload was interrupted. Try again.' }); });
   busboy.on('close', async () => {
     await Promise.all(pending);
+    // The browser's copy belongs to the one file it was sent with.
+    if (preview && !preview.failed) {
+      if (saved.length === 1 && !preview.tooBig) {
+        const doc = await store.get('uploads', saved[0]);
+        if (doc) { const { id, ...data } = doc; await store.put('uploads', id, { ...data, preview: { key: preview.key } }); }
+      } else {
+        await deleteObject(preview.key).catch(() => {});
+      }
+    }
+    saved.forEach(enqueue);
     if (res.headersSent) return;
     if (!saved.length) return res.status(400).json({ error: skipped.length ? 'Those files could not be saved. Photos and videos only, up to 300 MB each.' : 'Choose at least one photo.', skipped });
     res.json({ ok: true, saved: saved.length, skipped });
@@ -412,16 +482,198 @@ app.post('/api/upload', limit('upload', 60, 60 * 60_000), (req, res) => {
   req.pipe(busboy);
 });
 
-async function sendObject(res, key, type) {
+/* ----- making the public, location-free copies ----- */
+
+// Photos: re-encoded by sharp, which drops all metadata (GPS included). Videos: copied by
+// ffmpeg with all metadata and data tracks left out. Originals stay private (Admin only).
+const queue = [];
+let working = false;
+function enqueue(id) {
+  if (!queue.includes(id)) queue.push(id);
+  if (!working) work();
+}
+async function work() {
+  working = true;
+  while (queue.length) {
+    const id = queue.shift();
+    try { await processUpload(id); } catch (error) { console.error('process', id, error); }
+  }
+  working = false;
+}
+
+function run(args, timeoutMs = 10 * 60_000) {
+  return new Promise((resolve) => {
+    const child = spawn(ffmpegPath, ['-hide_banner', '-nostdin', ...args]);
+    let out = '', err = '';
+    const timer = setTimeout(() => child.kill('SIGKILL'), timeoutMs);
+    child.stdout.on('data', (d) => { if (out.length < 200_000) out += d; });
+    child.stderr.on('data', (d) => { if (err.length < 200_000) err += d; });
+    child.on('error', (error) => { clearTimeout(timer); resolve({ code: -1, out, err: String(error) }); });
+    child.on('close', (code) => { clearTimeout(timer); resolve({ code, out, err }); });
+  });
+}
+
+const exifTime = (v) => {
+  const m = /^(\d{4})[:-](\d\d)[:-](\d\d)[ T](\d\d):(\d\d)/.exec(String(v || ''));
+  return m ? `${m[1]}-${m[2]}-${m[3]} ${m[4]}:${m[5]}` : '';
+};
+function cameraFrom(make, model, lens, taken) {
+  make = clean(String(make || ''), 60); model = clean(String(model || ''), 80);
+  const name = model.toLowerCase().startsWith(make.toLowerCase()) ? model : [make, model].filter(Boolean).join(' ');
+  const out = {};
+  if (name) out.model = name;
+  if (lens) out.lens = clean(String(lens), 100);
+  if (taken) out.taken = taken;
+  return out;
+}
+
+async function imageCopies(input, base) {
+  const view = await sharp(input, { failOn: 'none' }).rotate()
+    .resize({ width: 2048, height: 2048, fit: 'inside', withoutEnlargement: true })
+    .jpeg({ quality: 82, mozjpeg: true }).toBuffer({ resolveWithObject: true });
+  const thumb = await sharp(view.data).resize({ width: 480, height: 480, fit: 'inside', withoutEnlargement: true })
+    .jpeg({ quality: 74, mozjpeg: true }).toBuffer();
+  await putObject(base + '.jpg', view.data, 'image/jpeg');
+  await putObject(base + '-thumb.jpg', thumb, 'image/jpeg');
+  return {
+    public: { key: base + '.jpg', type: 'image/jpeg', size: view.info.size, width: view.info.width, height: view.info.height },
+    thumb: { key: base + '-thumb.jpg', type: 'image/jpeg' },
+  };
+}
+
+async function processImage(doc, src, tmp, base) {
+  let camera = {};
+  try {
+    const t = await exifr.parse(src, { pick: ['Make', 'Model', 'LensModel', 'DateTimeOriginal', 'CreateDate', 'OffsetTimeOriginal'], reviveValues: false });
+    if (t) camera = cameraFrom(t.Make, t.Model, t.LensModel, [exifTime(t.DateTimeOriginal || t.CreateDate), t.OffsetTimeOriginal].filter(Boolean).join(' '));
+  } catch { /* no readable photo details */ }
+  let input = src;
+  let readable = await sharp(src).metadata().then(() => true, () => false);
+  if (!readable && doc.preview) {
+    input = path.join(tmp, 'preview.jpg');
+    await getObjectToFile(doc.preview.key, input);
+    readable = await sharp(input).metadata().then(() => true, () => false);
+  }
+  if (!readable) return { camera, status: 'private', reason: 'Not in the gallery: this file type could not be turned into a location-free copy.' };
+  return { camera, status: 'public', ...(await imageCopies(input, base)) };
+}
+
+async function processVideo(doc, src, tmp, base) {
+  const meta = await run(['-i', src, '-f', 'ffmetadata', '-']);
+  const tags = {};
+  for (const line of meta.out.split('\n')) { const i = line.indexOf('='); if (i > 0) tags[line.slice(0, i).toLowerCase()] = line.slice(i + 1); }
+  const camera = cameraFrom(tags['com.apple.quicktime.make'] || tags.make, tags['com.apple.quicktime.model'] || tags.model, '',
+    exifTime(tags['com.apple.quicktime.creationdate'] || tags.creation_time));
+  const vcodec = (/Stream #\S+?: Video: (\w+)/.exec(meta.err) || [])[1] || '';
+  if (!vcodec) return { camera, status: 'private', reason: 'Not in the gallery: the video could not be read.' };
+  const common = ['-map', '0:v:0', '-map', '0:a:0?', '-map_metadata', '-1', '-map_metadata:s:v', '-1', '-map_metadata:s:a', '-1', '-map_chapters', '-1'];
+  let out, type, args;
+  if (['h264', 'hevc'].includes(vcodec)) {
+    out = path.join(tmp, 'public.mp4'); type = 'video/mp4';
+    args = [...common, '-c', 'copy', ...(vcodec === 'hevc' ? ['-tag:v', 'hvc1'] : []), '-movflags', '+faststart', '-y', out];
+  } else if (['vp8', 'vp9', 'av1'].includes(vcodec)) {
+    out = path.join(tmp, 'public.webm'); type = 'video/webm';
+    args = [...common, '-c', 'copy', '-y', out];
+  } else {
+    out = path.join(tmp, 'public.mp4'); type = 'video/mp4';
+    args = [...common, '-vf', "scale='min(1920,iw)':-2", '-c:v', 'libx264', '-preset', 'veryfast', '-crf', '23', '-c:a', 'aac', '-movflags', '+faststart', '-y', out];
+  }
+  let r = await run(['-i', src, ...args]);
+  if (r.code !== 0 && args.includes('copy')) {
+    // Audio that does not fit the container: keep the video as is, re-encode the sound.
+    const i = args.indexOf('copy');
+    args.splice(i - 1, 2, '-c:v', 'copy', '-c:a', type === 'video/webm' ? 'libopus' : 'aac');
+    r = await run(['-i', src, ...args]);
+  }
+  if (r.code !== 0) { console.error('ffmpeg', r.err.slice(-800)); return { camera, status: 'private', reason: 'Not in the gallery: the video could not be converted.' }; }
+  const frame = path.join(tmp, 'frame.jpg');
+  let f = await run(['-ss', '0.5', '-i', out, '-frames:v', '1', '-y', frame], 120_000);
+  if (f.code !== 0 || !fs.existsSync(frame)) f = await run(['-i', out, '-frames:v', '1', '-y', frame], 120_000);
+  const size = fs.statSync(out).size;
+  await putObject(base + path.extname(out), fs.createReadStream(out), type);
+  const result = { camera, status: 'public', public: { key: base + path.extname(out), type, size } };
+  if (fs.existsSync(frame)) {
+    const thumb = await sharp(frame).resize({ width: 480, height: 480, fit: 'inside', withoutEnlargement: true }).jpeg({ quality: 74 }).toBuffer();
+    await putObject(base + '-thumb.jpg', thumb, 'image/jpeg');
+    const m = await sharp(frame).metadata();
+    Object.assign(result.public, { width: m.width, height: m.height });
+    result.thumb = { key: base + '-thumb.jpg', type: 'image/jpeg' };
+  }
+  return result;
+}
+
+async function processUpload(id) {
+  const doc = await store.get('uploads', id);
+  if (!doc || doc.status === 'public' || doc.status === 'private') return;
+  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'hea-'));
+  let result;
+  try {
+    const src = path.join(tmp, 'original');
+    await getObjectToFile(doc.key, src);
+    const base = `public/${String(doc.createdAt || new Date().toISOString()).slice(0, 10)}/${id}`;
+    result = doc.type.startsWith('video/') ? await processVideo(doc, src, tmp, base) : await processImage(doc, src, tmp, base);
+  } catch (error) {
+    console.error('process', id, error);
+    result = { status: 'private', reason: 'Not in the gallery: something went wrong making the location-free copy.' };
+  } finally {
+    fs.rmSync(tmp, { recursive: true, force: true });
+  }
+  const fresh = await store.get('uploads', id);
+  if (!fresh) { await dropUploadFiles(result); return; } // deleted while it was being processed
+  const { id: _, ...data } = fresh;
+  await store.put('uploads', id, { ...data, ...result, processedAt: new Date().toISOString() });
+}
+
+function uploadKeys(doc) {
+  return [doc?.key, doc?.preview?.key, doc?.public?.key, doc?.thumb?.key].filter(Boolean);
+}
+async function dropUploadFiles(doc) {
+  for (const key of uploadKeys(doc)) { try { await deleteObject(key); } catch (error) { console.error('delete object', error); } }
+}
+
+/* ----- public gallery ----- */
+
+app.get('/api/photos', async (req, res) => {
+  try {
+    const rows = (await store.list('uploads'))
+      .filter((u) => u.status === 'public' && u.public && u.thumb)
+      .sort((a, b) => String(b.createdAt).localeCompare(String(a.createdAt)))
+      .map((u) => ({ id: u.id, kind: u.public.type.startsWith('video/') ? 'video' : 'image', by: u.by || '', at: u.createdAt, w: u.public.width || 0, h: u.public.height || 0 }));
+    res.setHeader('Cache-Control', 'no-store');
+    res.json(rows);
+  } catch (error) {
+    console.error('photos', error);
+    res.status(500).json({ error: 'The photos could not load.' });
+  }
+});
+
+// Only the location-free copies are public.
+app.get('/photo/:id/:size', async (req, res) => {
+  const { id, size } = req.params;
+  if (!ID_RE.test(id) || !['thumb', 'view'].includes(size)) return res.status(404).end();
+  const doc = await store.get('uploads', id);
+  const file = doc?.status === 'public' ? (size === 'thumb' ? doc.thumb : doc.public) : null;
+  if (!file) return res.status(404).end();
+  const download = size === 'view' && req.query.download === '1'
+    ? `happily-ever-after-${id}${path.extname(file.key)}` : '';
+  await sendObject(res, file.key, file.type, { download, cache: 600 });
+});
+
+async function sendObject(res, key, type, opts = {}) {
+  if (opts.cache) res.setHeader('Cache-Control', `private, max-age=${opts.cache}`);
+  const disposition = opts.download ? `attachment; filename="${opts.download}"` : undefined;
   if (s3) {
-    const url = await getSignedUrl(s3, new GetObjectCommand({ Bucket: env.BUCKET, Key: key }), { expiresIn: 3600 });
+    const url = await getSignedUrl(s3, new GetObjectCommand({ Bucket: env.BUCKET, Key: key, ResponseContentDisposition: disposition }), { expiresIn: 3600 });
     return res.redirect(302, url);
   }
-  if (localDir) return res.type(type).sendFile(path.join(localDir, key.replace(/\//g, '_')));
+  if (localDir) {
+    if (disposition) res.setHeader('Content-Disposition', disposition);
+    return res.type(type).sendFile(path.join(localDir, key.replace(/\//g, '_')));
+  }
   res.status(404).end();
 }
 
-// Admin only for now: there is no public gallery yet.
+// Originals (which can hold GPS and camera details): Admin only.
 app.get('/media/:id', requireAdmin, async (req, res) => {
   if (!ID_RE.test(req.params.id)) return res.status(404).end();
   const doc = await store.get('uploads', req.params.id);
@@ -476,9 +728,16 @@ app.get('/api/admin/uploads', requireAdmin, async (req, res) => {
 app.delete('/api/admin/uploads/:id', requireAdmin, async (req, res) => {
   const doc = ID_RE.test(req.params.id) ? await store.get('uploads', req.params.id) : null;
   if (!doc) return res.status(404).json({ error: 'That photo is already gone.' });
-  try { await deleteObject(doc.key); } catch (error) { console.error('delete object', error); }
+  await dropUploadFiles(doc);
   await store.del('uploads', req.params.id);
   res.json({ ok: true });
+});
+app.post('/api/admin/uploads/delete-device', requireAdmin, json, async (req, res) => {
+  const device = typeof req.body?.device === 'string' ? req.body.device : '';
+  if (!/^[A-Za-z0-9_-]{8,40}$/.test(device)) return res.status(400).json({ error: 'No device chosen.' });
+  const docs = (await store.list('uploads')).filter((u) => u.device?.id === device);
+  for (const doc of docs) { await dropUploadFiles(doc); await store.del('uploads', doc.id); }
+  res.json({ ok: true, deleted: docs.length });
 });
 
 function checkDoc(req, res) {
@@ -535,4 +794,5 @@ await migrateOnce('story-v2', async () => {
   }
   for (const doc of next) await store.put('story', doc.id, doc.data);
 });
+for (const u of await store.list('uploads')) if (u.status !== 'public' && u.status !== 'private') enqueue(u.id);
 app.listen(PORT, () => console.log(`Listening on ${PORT} (store: ${store.kind}, uploads: ${s3 ? 'bucket' : localDir ? 'local folder' : 'off'})`));

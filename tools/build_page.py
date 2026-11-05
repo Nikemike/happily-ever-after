@@ -58,7 +58,53 @@ rep('  .photos .card p { margin: 0; max-width: 42ch; }\n  .photos .tag { align-s
   .guest-list .who { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
   .guest-list b, .guest-list q { overflow-wrap: anywhere; }
   .guest-list small { font-size: 0.875rem; opacity: 0.8; }
-  .guest-list q { font-style: italic; font-size: 0.9375rem; }''')
+  .guest-list q { font-style: italic; font-size: 0.9375rem; }
+  .device-line { font-size: 0.8125rem; opacity: 0.75; overflow-wrap: anywhere; }
+  .gallery-wrap { max-width: 1100px; margin: 48px auto 0; display: flex; flex-direction: column; gap: 14px; }
+  .gallery-wrap h3 { margin: 0; text-align: center; font-family: var(--font-caps); font-weight: 600; font-size: 1.5rem; }
+  .gallery { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
+  @media (min-width: 640px) { .gallery { grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 10px; } }
+  .tile {
+    position: relative; display: block; padding: 0; border: 0; border-radius: 4px; overflow: hidden;
+    aspect-ratio: 1 / 1; background: var(--field); cursor: zoom-in;
+  }
+  .tile img { display: block; width: 100%; height: 100%; object-fit: cover; transition: transform 200ms ease; }
+  .tile:hover img { transform: scale(1.04); }
+  .play {
+    position: absolute; right: 8px; bottom: 8px; width: 30px; height: 30px; display: grid; place-items: center;
+    border-radius: 50%; background: rgba(31, 61, 42, 0.78); color: #fff; font-size: 0.75rem; pointer-events: none;
+  }
+  .actions.center { justify-content: center; }
+  dialog.viewer {
+    width: min(1100px, calc(100vw - 24px)); max-width: none; max-height: calc(100vh - 24px); padding: 0; border: 0;
+    border-radius: 6px; background: #12241a; color: #f1eee1; overflow: hidden;
+  }
+  dialog.viewer::backdrop { background: rgba(10, 20, 14, 0.85); }
+  .viewer-media { display: flex; align-items: center; justify-content: center; background: #0c1811; min-height: 120px; }
+  .viewer-media img, .viewer-media video { display: block; max-width: 100%; max-height: calc(100vh - 140px); object-fit: contain; }
+  .viewer-bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px 16px; padding: 12px 16px; }
+  .viewer-bar p { margin: 0; font-size: 0.9375rem; overflow-wrap: anywhere; }
+  .viewer .mini { background: transparent; color: #f1eee1; border-color: rgba(241, 238, 225, 0.45); }
+  .viewer .mini:hover { background: rgba(241, 238, 225, 0.12); }
+  .viewer .mini:disabled { opacity: 0.35; cursor: default; }
+  .photo-row .photo-thumb {
+    position: relative; flex: none; width: 96px; height: 96px; display: grid; place-items: center; overflow: hidden;
+    border-radius: 4px; border: 1px solid var(--line); background: var(--field); color: var(--monstera);
+    font-size: 0.8125rem; text-decoration: none;
+  }
+  .photo-thumb img { width: 100%; height: 100%; object-fit: cover; }
+  .photo-thumb .play { right: 6px; bottom: 6px; width: 24px; height: 24px; font-size: 0.625rem; }
+  .row .tags { gap: 3px; font-size: 0.875rem; }
+  .tags > div { overflow-wrap: anywhere; }
+  .tags .state { font-weight: 700; }
+  .tags .state.public { color: var(--leaf); }
+  .tags .state.private { color: var(--hibiscus); }
+  .tags .state.processing { color: var(--thatch); }
+  .tags .mini { padding: 5px 9px; margin-left: 4px; font-size: 0.625rem; }
+  .tags summary { cursor: pointer; opacity: 0.8; }
+  .tags code { display: block; margin-top: 4px; font-size: 0.75rem; overflow-wrap: anywhere; opacity: 0.8; }
+  .filter-bar { display: flex; flex-direction: column; gap: 10px; padding: 12px 14px; background: var(--field); border-radius: 4px; }
+  .filter-bar p { margin: 0; font-weight: 700; overflow-wrap: anywhere; }''')
 
 # ---------- RSVP reply panel: saved for real ----------
 rep('''      <div class="reply" id="rsvp-reply" hidden>
@@ -115,7 +161,32 @@ s = s[:a] + '''    <div class="card">
         </div>
       </form>
     </div>
+
+    <div class="gallery-wrap" aria-labelledby="gallery-title">
+      <h3 id="gallery-title">Everyone\u2019s photos</h3>
+      <p class="hint" id="gallery-status">Loading photos.</p>
+      <div class="gallery" id="gallery-grid"></div>
+      <div class="actions center">
+        <button class="button quiet" type="button" id="gallery-more" hidden>Show more</button>
+      </div>
+    </div>
 ''' + s[b:]
+
+# full-size viewer, at page level so it can open over any tab
+rep('<dialog class="pop" id="pop"', '''<dialog class="viewer" id="viewer" aria-label="Photo viewer">
+  <div class="viewer-media" id="viewer-media"></div>
+  <div class="viewer-bar">
+    <p id="viewer-caption"></p>
+    <div class="actions">
+      <a class="mini" id="viewer-download" href="#">Download</a>
+      <button class="mini" type="button" id="viewer-prev">Previous</button>
+      <button class="mini" type="button" id="viewer-next">Next</button>
+      <button class="mini" type="button" id="viewer-close">Close</button>
+    </div>
+  </div>
+</dialog>
+
+<dialog class="pop" id="pop"''')
 
 # ---------- Admin: login view, logout, RSVP list, guest photos ----------
 rep('''  <section class="admin" id="admin" aria-labelledby="admin-title" data-view="admin" hidden>''', '''  <section class="login" id="login" aria-labelledby="login-title" data-view="login" hidden>
@@ -160,7 +231,8 @@ rep('''    <button class="button quiet" type="button" id="admin-close">Back to t
       <div class="actions">
         <button class="mini" type="button" id="admin-upload-refresh">Refresh</button>
       </div>
-      <div class="thumbs" id="admin-upload-grid"></div>
+      <div class="filter-bar" id="admin-upload-filter" hidden></div>
+      <ul class="rows" id="admin-upload-grid"></ul>
     </div>
 ''')
 
@@ -188,8 +260,9 @@ rep("    if (wanted === 'admin') go('admin', false);\n", "    if (wanted === 'ad
 # ---------- wrap as a full document and add the live scripts ----------
 client = open(os.path.join(here, 'live-client.js'), encoding='utf-8').read().rstrip()
 admin = open(os.path.join(here, 'live-admin.js'), encoding='utf-8').read().rstrip()
+gallery = open(os.path.join(here, 'live-gallery.js'), encoding='utf-8').read().rstrip()
 store_start = s.rindex('<script>')
-s = s[:store_start] + '<script>\n' + client + '\n</script>\n\n' + s[store_start:].rstrip() + '\n\n<script>\n' + admin + '\n</script>\n'
+s = s[:store_start] + '<script>\n' + client + '\n</script>\n\n' + s[store_start:].rstrip() + '\n\n<script>\n' + admin + '\n</script>\n\n<script>\n' + gallery + '\n</script>\n'
 
 head_end = s.index('</style>') + len('</style>')
 head, body = s[:head_end], s[head_end:]

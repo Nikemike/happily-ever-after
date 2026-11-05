@@ -378,6 +378,52 @@
   .guest-list b, .guest-list q { overflow-wrap: anywhere; }
   .guest-list small { font-size: 0.875rem; opacity: 0.8; }
   .guest-list q { font-style: italic; font-size: 0.9375rem; }
+  .device-line { font-size: 0.8125rem; opacity: 0.75; overflow-wrap: anywhere; }
+  .gallery-wrap { max-width: 1100px; margin: 48px auto 0; display: flex; flex-direction: column; gap: 14px; }
+  .gallery-wrap h3 { margin: 0; text-align: center; font-family: var(--font-caps); font-weight: 600; font-size: 1.5rem; }
+  .gallery { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
+  @media (min-width: 640px) { .gallery { grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 10px; } }
+  .tile {
+    position: relative; display: block; padding: 0; border: 0; border-radius: 4px; overflow: hidden;
+    aspect-ratio: 1 / 1; background: var(--field); cursor: zoom-in;
+  }
+  .tile img { display: block; width: 100%; height: 100%; object-fit: cover; transition: transform 200ms ease; }
+  .tile:hover img { transform: scale(1.04); }
+  .play {
+    position: absolute; right: 8px; bottom: 8px; width: 30px; height: 30px; display: grid; place-items: center;
+    border-radius: 50%; background: rgba(31, 61, 42, 0.78); color: #fff; font-size: 0.75rem; pointer-events: none;
+  }
+  .actions.center { justify-content: center; }
+  dialog.viewer {
+    width: min(1100px, calc(100vw - 24px)); max-width: none; max-height: calc(100vh - 24px); padding: 0; border: 0;
+    border-radius: 6px; background: #12241a; color: #f1eee1; overflow: hidden;
+  }
+  dialog.viewer::backdrop { background: rgba(10, 20, 14, 0.85); }
+  .viewer-media { display: flex; align-items: center; justify-content: center; background: #0c1811; min-height: 120px; }
+  .viewer-media img, .viewer-media video { display: block; max-width: 100%; max-height: calc(100vh - 140px); object-fit: contain; }
+  .viewer-bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px 16px; padding: 12px 16px; }
+  .viewer-bar p { margin: 0; font-size: 0.9375rem; overflow-wrap: anywhere; }
+  .viewer .mini { background: transparent; color: #f1eee1; border-color: rgba(241, 238, 225, 0.45); }
+  .viewer .mini:hover { background: rgba(241, 238, 225, 0.12); }
+  .viewer .mini:disabled { opacity: 0.35; cursor: default; }
+  .photo-row .photo-thumb {
+    position: relative; flex: none; width: 96px; height: 96px; display: grid; place-items: center; overflow: hidden;
+    border-radius: 4px; border: 1px solid var(--line); background: var(--field); color: var(--monstera);
+    font-size: 0.8125rem; text-decoration: none;
+  }
+  .photo-thumb img { width: 100%; height: 100%; object-fit: cover; }
+  .photo-thumb .play { right: 6px; bottom: 6px; width: 24px; height: 24px; font-size: 0.625rem; }
+  .row .tags { gap: 3px; font-size: 0.875rem; }
+  .tags > div { overflow-wrap: anywhere; }
+  .tags .state { font-weight: 700; }
+  .tags .state.public { color: var(--leaf); }
+  .tags .state.private { color: var(--hibiscus); }
+  .tags .state.processing { color: var(--thatch); }
+  .tags .mini { padding: 5px 9px; margin-left: 4px; font-size: 0.625rem; }
+  .tags summary { cursor: pointer; opacity: 0.8; }
+  .tags code { display: block; margin-top: 4px; font-size: 0.75rem; overflow-wrap: anywhere; opacity: 0.8; }
+  .filter-bar { display: flex; flex-direction: column; gap: 10px; padding: 12px 14px; background: var(--field); border-radius: 4px; }
+  .filter-bar p { margin: 0; font-weight: 700; overflow-wrap: anywhere; }
 
   /* ---------- our story ---------- */
   .story { padding-inline: clamp(20px, 6vw, 72px); padding-block: 8px 56px; }
@@ -965,6 +1011,15 @@
         </div>
       </form>
     </div>
+
+    <div class="gallery-wrap" aria-labelledby="gallery-title">
+      <h3 id="gallery-title">Everyone’s photos</h3>
+      <p class="hint" id="gallery-status">Loading photos.</p>
+      <div class="gallery" id="gallery-grid"></div>
+      <div class="actions center">
+        <button class="button quiet" type="button" id="gallery-more" hidden>Show more</button>
+      </div>
+    </div>
   </section>
 
   <section class="login" id="login" aria-labelledby="login-title" data-view="login" hidden>
@@ -1012,7 +1067,8 @@
       <div class="actions">
         <button class="mini" type="button" id="admin-upload-refresh">Refresh</button>
       </div>
-      <div class="thumbs" id="admin-upload-grid"></div>
+      <div class="filter-bar" id="admin-upload-filter" hidden></div>
+      <ul class="rows" id="admin-upload-grid"></ul>
     </div>
 
     <div class="card">
@@ -1212,6 +1268,19 @@
 
   <img class="band" src="img/floor.jpg" width="1800" height="546" alt="">
 </main>
+
+<dialog class="viewer" id="viewer" aria-label="Photo viewer">
+  <div class="viewer-media" id="viewer-media"></div>
+  <div class="viewer-bar">
+    <p id="viewer-caption"></p>
+    <div class="actions">
+      <a class="mini" id="viewer-download" href="#">Download</a>
+      <button class="mini" type="button" id="viewer-prev">Previous</button>
+      <button class="mini" type="button" id="viewer-next">Next</button>
+      <button class="mini" type="button" id="viewer-close">Close</button>
+    </div>
+  </div>
+</dialog>
 
 <dialog class="pop" id="pop" aria-labelledby="pop-quote">
   <div class="pop-inner">
@@ -1436,8 +1505,11 @@
       guests: list.map(function (g) { return { name: g.name, age: g.age, comment: g.comment }; })
     };
     var data = new FormData();
-    data.append('data', JSON.stringify(payload));
-    list.reduce(function (chain, g, i) {
+    (window.heaDevice ? window.heaDevice() : Promise.resolve({})).then(function (device) {
+      payload.device = device;
+      data.append('data', JSON.stringify(payload));
+    }).then(function () {
+      return list.reduce(function (chain, g, i) {
       if (!g.file) return chain;
       return chain.then(function () {
         return shrink(g.file).then(function (blob) {
@@ -1445,7 +1517,8 @@
           data.append('photo-' + i, blob, fname);
         });
       });
-    }, Promise.resolve()).then(function () {
+    }, Promise.resolve());
+    }).then(function () {
       return post(data);
     }).then(function () {
       var lines = coming
@@ -1550,6 +1623,31 @@
     .then((r) => r.json()).catch(() => ({ admin: false, uploads: false })));
   const user = { canEdit: async () => !!(await getSession()).admin, isOwner: async () => !!(await getSession()).admin };
   window.liveSession = getSession;
+
+  // Sent with uploads and RSVPs so Admin can see which device sent what: a random ID kept on
+  // this device, the screen size, and (Chrome-based browsers only) the model and OS version.
+  let deviceId = '';
+  const randomId = () => {
+    const b = new Uint8Array(12);
+    crypto.getRandomValues(b);
+    return btoa(String.fromCharCode.apply(null, b)).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+  };
+  window.heaDevice = async function () {
+    try {
+      deviceId = localStorage.getItem('hea-device') || '';
+      if (!/^[A-Za-z0-9_-]{8,40}$/.test(deviceId)) { deviceId = randomId(); localStorage.setItem('hea-device', deviceId); }
+    } catch (error) {
+      if (!deviceId) deviceId = randomId();
+    }
+    const out = { id: deviceId, screen: screen.width + 'x' + screen.height + '@' + (window.devicePixelRatio || 1) };
+    try {
+      if (navigator.userAgentData && navigator.userAgentData.getHighEntropyValues) {
+        const h = await navigator.userAgentData.getHighEntropyValues(['model', 'platformVersion']);
+        out.model = h.model || ''; out.platform = h.platform || ''; out.platformVersion = h.platformVersion || '';
+      }
+    } catch (error) { /* not offered by this browser */ }
+    return out;
+  };
   window.claude = { use: async (name) => (name === 'db' ? db : name === 'user' ? user : null) };
 })();
 </script>
@@ -2242,6 +2340,11 @@
       const span = document.createElement('span');
       span.textContent = (r.attending === 'yes' ? 'Coming, party of ' + r.count : 'Can’t make it') + ' · ' + when(r.updatedAt);
       what.append(strong, span);
+      if (r.device && r.device.summary) {
+        const dev = document.createElement('small'); dev.className = 'device-line';
+        dev.textContent = 'Sent from ' + r.device.summary + (r.device.ip ? ' · IP ' + r.device.ip : '');
+        what.appendChild(dev);
+      }
       if (r.attending === 'yes' && Array.isArray(r.guests) && r.guests.length) what.appendChild(guestList(r));
       const acts = document.createElement('div'); acts.className = 'acts';
       if (rsvpConfirm === r.id) {
@@ -2266,40 +2369,104 @@
   $('admin-rsvp-refresh').addEventListener('click', loadRsvps);
 
   /* ---------- guest photos (review) ---------- */
-  let uploads = [], uploadConfirm = null;
-  function drawUploads() {
-    $('admin-upload-summary').textContent = uploads.length
-      ? uploads.length + (uploads.length === 1 ? ' file' : ' files') + ' uploaded by guests.'
-      : 'No guest photos yet.';
-    $('admin-upload-grid').replaceChildren(...uploads.map((u) => {
-      const fig = document.createElement('figure'); fig.className = 'thumb';
-      if (/^image\//.test(u.type)) {
-        const img = document.createElement('img');
-        img.src = '/media/' + encodeURIComponent(u.id); img.alt = u.filename || 'Guest photo'; img.loading = 'lazy';
-        fig.appendChild(img);
-      } else {
-        const a = document.createElement('a');
-        a.href = '/media/' + encodeURIComponent(u.id); a.target = '_blank'; a.rel = 'noopener';
-        a.className = 'video'; a.textContent = 'Video: ' + (u.filename || 'open');
-        fig.appendChild(a);
+  let uploads = [], uploadConfirm = null, deviceFilter = '', deviceConfirm = false, refreshTimer = null;
+  const fullTime = (iso) => { const d = new Date(iso); return isNaN(d) ? '' : d.toLocaleString(undefined, { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }); };
+  const mb = (n) => (n < 1048576 ? Math.max(1, Math.round(n / 1024)) + ' KB' : (n / 1048576).toFixed(n < 10485760 ? 1 : 0) + ' MB');
+  function tag(label, value) {
+    const div = document.createElement('div');
+    const b = document.createElement('b'); b.textContent = label + ': ';
+    div.append(b, document.createTextNode(value));
+    return div;
+  }
+  function photoRow(u) {
+    const li = document.createElement('li'); li.className = 'row photo-row';
+    const link = document.createElement('a');
+    link.className = 'photo-thumb'; link.href = '/media/' + encodeURIComponent(u.id); link.target = '_blank'; link.rel = 'noopener';
+    link.title = 'Open the original file';
+    const isVideo = /^video\//.test(u.type);
+    const src = u.status === 'public' && u.thumb ? '/photo/' + encodeURIComponent(u.id) + '/thumb' : (!isVideo ? '/media/' + encodeURIComponent(u.id) : '');
+    if (src) {
+      const img = document.createElement('img'); img.src = src; img.alt = u.filename || 'Guest photo'; img.loading = 'lazy';
+      link.appendChild(img);
+    } else {
+      link.textContent = isVideo ? 'Video' : 'File';
+    }
+    if (isVideo) { const badge = document.createElement('span'); badge.className = 'play'; badge.textContent = '▶'; link.appendChild(badge); }
+
+    const what = document.createElement('div'); what.className = 'what tags';
+    const head = document.createElement('strong');
+    head.textContent = (u.by || 'No name given') + ' · ' + fullTime(u.createdAt);
+    const state = document.createElement('div');
+    state.className = 'state ' + (u.status || 'processing');
+    state.textContent = u.status === 'public' ? 'In the public gallery (location removed)'
+      : u.status === 'private' ? (u.reason || 'Not in the gallery.') : 'Making the location-free copy…';
+    what.append(head, state);
+    const d = u.device || null;
+    if (d) {
+      what.appendChild(tag('Device', d.summary + (d.screen ? ' · screen ' + d.screen : '')));
+      if (d.ip) what.appendChild(tag('IP', d.ip + (d.forwardedFor && d.forwardedFor !== d.ip ? ' (forwarded for ' + d.forwardedFor + ')' : '')));
+      if (d.id) {
+        const idLine = tag('Device ID', d.id + ' ');
+        if (deviceFilter !== d.id) idLine.appendChild(mini('Only this device', false, () => { deviceFilter = d.id; deviceConfirm = false; drawUploads(); }));
+        what.appendChild(idLine);
       }
-      const cap = document.createElement('figcaption');
-      cap.textContent = (u.by ? u.by + ' · ' : '') + when(u.createdAt);
-      const acts = document.createElement('div'); acts.className = 'acts';
-      if (uploadConfirm === u.id) {
+      const ua = document.createElement('details');
+      const sum = document.createElement('summary'); sum.textContent = 'Full browser details';
+      const code = document.createElement('code'); code.textContent = d.userAgent || '(none sent)';
+      ua.append(sum, code);
+      what.appendChild(ua);
+    } else {
+      what.appendChild(tag('Device', 'not recorded (uploaded before device tagging)'));
+    }
+    const c = u.camera || {};
+    if (c.model || c.taken) what.appendChild(tag('Camera', [c.model, c.lens && c.lens !== c.model ? c.lens : '', c.taken ? 'taken ' + c.taken : ''].filter(Boolean).join(' · ')));
+    else if (u.status && u.status !== 'processing') what.appendChild(tag('Camera', 'no camera details in the file'));
+    what.appendChild(tag('File', (u.filename || 'unnamed') + ' · ' + mb(u.size || 0)));
+
+    const acts = document.createElement('div'); acts.className = 'acts';
+    if (uploadConfirm === u.id) {
+      acts.append(
+        mini('Yes, delete', true, async () => {
+          try { await call('DELETE', '/api/admin/uploads/' + encodeURIComponent(u.id)); uploadConfirm = null; loadUploads(); }
+          catch (error) { $('admin-upload-summary').textContent = error.message; }
+        }),
+        mini('Keep', false, () => { uploadConfirm = null; drawUploads(); })
+      );
+    } else {
+      acts.append(mini('Delete', false, () => { uploadConfirm = u.id; drawUploads(); }));
+    }
+    li.append(link, what, acts);
+    return li;
+  }
+  function drawUploads() {
+    const shown = deviceFilter ? uploads.filter((u) => u.device && u.device.id === deviceFilter) : uploads;
+    const inGallery = uploads.filter((u) => u.status === 'public').length;
+    $('admin-upload-summary').textContent = uploads.length
+      ? plural(uploads.length, 'file', 'files') + ' uploaded by guests, ' + inGallery + ' in the public gallery. Only you can see the details below.'
+      : 'No guest photos yet.';
+    const bar = $('admin-upload-filter');
+    bar.hidden = !deviceFilter;
+    if (deviceFilter) {
+      const text = document.createElement('p');
+      text.textContent = 'Showing ' + plural(shown.length, 'file', 'files') + ' from device ' + deviceFilter + '.';
+      const acts = document.createElement('div'); acts.className = 'actions';
+      acts.appendChild(mini('Show all', false, () => { deviceFilter = ''; deviceConfirm = false; drawUploads(); }));
+      if (deviceConfirm) {
         acts.append(
-          mini('Yes, delete', true, async () => {
-            try { await call('DELETE', '/api/admin/uploads/' + encodeURIComponent(u.id)); uploadConfirm = null; loadUploads(); }
+          mini('Yes, delete all ' + shown.length, true, async () => {
+            try { await call('POST', '/api/admin/uploads/delete-device', { device: deviceFilter }); deviceFilter = ''; deviceConfirm = false; loadUploads(); }
             catch (error) { $('admin-upload-summary').textContent = error.message; }
           }),
-          mini('Keep', false, () => { uploadConfirm = null; drawUploads(); })
+          mini('Keep', false, () => { deviceConfirm = false; drawUploads(); })
         );
-      } else {
-        acts.append(mini('Delete', false, () => { uploadConfirm = u.id; drawUploads(); }));
+      } else if (shown.length) {
+        acts.appendChild(mini('Delete all ' + shown.length + ' from this device', true, () => { deviceConfirm = true; drawUploads(); }));
       }
-      fig.append(cap, acts);
-      return fig;
-    }));
+      bar.replaceChildren(text, acts);
+    }
+    $('admin-upload-grid').replaceChildren(...shown.map(photoRow));
+    clearTimeout(refreshTimer);
+    if (uploads.some((u) => !u.status || u.status === 'processing')) refreshTimer = setTimeout(loadUploads, 5000);
   }
   async function loadUploads() {
     try { uploads = await call('GET', '/api/admin/uploads'); drawUploads(); }
@@ -2313,10 +2480,33 @@
   (window.liveSession ? window.liveSession() : Promise.resolve({ uploads: false })).then((s) => {
     if (!s.uploads) { send.disabled = true; files.disabled = true; say(status, 'Photo uploads are not switched on yet.', false); }
   });
-  function sendOne(file, name) {
+  // iPhone HEIC photos: the server cannot read them, so send a JPEG copy the browser makes
+  // (Safari can). The server re-encodes it and removes all location data before it is public.
+  function heicPreview(file) {
+    if (!/image\/hei[cf]/i.test(file.type || '') && !/\.hei[cf]$/i.test(file.name || '')) return Promise.resolve(null);
+    return new Promise((resolve) => {
+      const url = URL.createObjectURL(file);
+      const img = new Image();
+      img.onload = () => {
+        const scale = Math.min(1, 2048 / Math.max(img.naturalWidth, img.naturalHeight));
+        const c = document.createElement('canvas');
+        c.width = Math.round(img.naturalWidth * scale); c.height = Math.round(img.naturalHeight * scale);
+        c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+        URL.revokeObjectURL(url);
+        c.toBlob((b) => resolve(b && b.size ? b : null), 'image/jpeg', 0.88);
+      };
+      img.onerror = () => { URL.revokeObjectURL(url); resolve(null); };
+      img.src = url;
+    });
+  }
+  async function sendOne(file, name) {
+    const device = window.heaDevice ? await window.heaDevice() : {};
+    const preview = await heicPreview(file);
     return new Promise((resolve, reject) => {
       const data = new FormData();
       data.append('name', name);
+      data.append('device', JSON.stringify(device));
+      if (preview) data.append('preview', preview, 'preview.jpg');
       data.append('file', file, file.name);
       const xhr = new XMLHttpRequest();
       xhr.open('POST', '/api/upload');
@@ -2345,8 +2535,116 @@
     if (ok) files.value = '';
     say(status, failed.length
       ? (ok ? ok + ' uploaded. ' : '') + 'These did not go through: ' + failed.join(' ')
-      : 'Thank you! ' + ok + (ok === 1 ? ' file' : ' files') + ' uploaded.', failed.length > 0);
+      : 'Thank you! ' + ok + (ok === 1 ? ' file' : ' files') + ' uploaded. ' + (ok === 1 ? 'It shows' : 'They show') + ' in the gallery below in a minute.', failed.length > 0);
+    if (ok) document.dispatchEvent(new CustomEvent('photos-uploaded'));
   });
+})();
+</script>
+
+<script>
+(function () {
+  'use strict';
+  // Public gallery on the Photos tab: everyone's photos and videos, newest first. Only the
+  // location-free copies the server makes are shown; originals stay in Admin.
+  const $ = (id) => document.getElementById(id);
+  const section = $('photos'), grid = $('gallery-grid'), status = $('gallery-status'), more = $('gallery-more');
+  const viewer = $('viewer'), media = $('viewer-media'), caption = $('viewer-caption');
+  const PAGE = 48;
+  let photos = [], shown = PAGE, current = -1, timer = null, loading = false;
+
+  const when = (iso) => {
+    const d = new Date(iso);
+    return isNaN(d) ? '' : d.toLocaleString(undefined, { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
+  };
+  const url = (p, size) => '/photo/' + encodeURIComponent(p.id) + '/' + size;
+
+  function draw() {
+    status.textContent = photos.length
+      ? photos.length + (photos.length === 1 ? ' photo or video so far.' : ' photos and videos so far.')
+      : 'No photos yet. Be the first to add one!';
+    const list = photos.slice(0, shown);
+    // Keep tiles that are already on screen so images do not reload on every refresh.
+    const have = new Map([...grid.children].map((el) => [el.dataset.id, el]));
+    const tiles = list.map((p, i) => {
+      let b = have.get(p.id);
+      if (!b) {
+        b = document.createElement('button');
+        b.type = 'button'; b.className = 'tile'; b.dataset.id = p.id;
+        const img = document.createElement('img');
+        img.src = url(p, 'thumb'); img.loading = 'lazy'; img.alt = '';
+        b.appendChild(img);
+        if (p.kind === 'video') { const v = document.createElement('span'); v.className = 'play'; v.textContent = '▶'; b.appendChild(v); }
+        b.setAttribute('aria-label', (p.kind === 'video' ? 'Video' : 'Photo') + (p.by ? ' shared by ' + p.by : ''));
+      }
+      b.onclick = () => open(photos.indexOf(p));
+      return b;
+    });
+    grid.replaceChildren(...tiles);
+    more.hidden = photos.length <= shown;
+  }
+
+  async function load() {
+    if (loading) return;
+    loading = true;
+    try {
+      const r = await fetch('/api/photos', { cache: 'no-store' });
+      if (!r.ok) throw new Error();
+      photos = await r.json();
+      draw();
+    } catch (error) {
+      if (!photos.length) status.textContent = 'The photos could not load. Try again in a moment.';
+    }
+    loading = false;
+  }
+
+  function show(i) {
+    const p = photos[i];
+    if (!p) return;
+    current = i;
+    let el;
+    if (p.kind === 'video') {
+      el = document.createElement('video');
+      el.controls = true; el.playsInline = true; el.preload = 'metadata';
+      el.poster = url(p, 'thumb'); el.src = url(p, 'view');
+    } else {
+      el = document.createElement('img');
+      el.src = url(p, 'view'); el.alt = p.by ? 'Photo shared by ' + p.by : 'Party photo';
+    }
+    media.replaceChildren(el);
+    caption.textContent = (p.by ? 'Shared by ' + p.by + ' · ' : '') + when(p.at) + ' · ' + (i + 1) + ' of ' + photos.length;
+    $('viewer-download').href = url(p, 'view') + '?download=1';
+    $('viewer-prev').disabled = i === 0;
+    $('viewer-next').disabled = i === photos.length - 1;
+  }
+  function open(i) {
+    show(i);
+    if (!viewer.open) viewer.showModal();
+  }
+  function close() {
+    media.replaceChildren();
+    if (viewer.open) viewer.close();
+  }
+  $('viewer-prev').addEventListener('click', () => show(current - 1));
+  $('viewer-next').addEventListener('click', () => show(current + 1));
+  $('viewer-close').addEventListener('click', close);
+  viewer.addEventListener('close', () => media.replaceChildren());
+  viewer.addEventListener('click', (e) => { if (e.target === viewer) close(); });
+  viewer.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowLeft' && current > 0) show(current - 1);
+    if (e.key === 'ArrowRight' && current < photos.length - 1) show(current + 1);
+  });
+  more.addEventListener('click', () => { shown += PAGE; draw(); });
+
+  // Load when the Photos tab is open, and check for new photos every minute while it is.
+  function sync() {
+    clearInterval(timer);
+    if (section.hidden) return;
+    load();
+    timer = setInterval(() => { if (!document.hidden && !viewer.open) load(); }, 60000);
+  }
+  new MutationObserver(sync).observe(section, { attributes: true, attributeFilter: ['hidden'] });
+  document.addEventListener('photos-uploaded', () => { setTimeout(load, 4000); setTimeout(load, 15000); });
+  sync();
 })();
 </script>
 </body>

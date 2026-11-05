@@ -74,5 +74,30 @@
     .then((r) => r.json()).catch(() => ({ admin: false, uploads: false })));
   const user = { canEdit: async () => !!(await getSession()).admin, isOwner: async () => !!(await getSession()).admin };
   window.liveSession = getSession;
+
+  // Sent with uploads and RSVPs so Admin can see which device sent what: a random ID kept on
+  // this device, the screen size, and (Chrome-based browsers only) the model and OS version.
+  let deviceId = '';
+  const randomId = () => {
+    const b = new Uint8Array(12);
+    crypto.getRandomValues(b);
+    return btoa(String.fromCharCode.apply(null, b)).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+  };
+  window.heaDevice = async function () {
+    try {
+      deviceId = localStorage.getItem('hea-device') || '';
+      if (!/^[A-Za-z0-9_-]{8,40}$/.test(deviceId)) { deviceId = randomId(); localStorage.setItem('hea-device', deviceId); }
+    } catch (error) {
+      if (!deviceId) deviceId = randomId();
+    }
+    const out = { id: deviceId, screen: screen.width + 'x' + screen.height + '@' + (window.devicePixelRatio || 1) };
+    try {
+      if (navigator.userAgentData && navigator.userAgentData.getHighEntropyValues) {
+        const h = await navigator.userAgentData.getHighEntropyValues(['model', 'platformVersion']);
+        out.model = h.model || ''; out.platform = h.platform || ''; out.platformVersion = h.platformVersion || '';
+      }
+    } catch (error) { /* not offered by this browser */ }
+    return out;
+  };
   window.claude = { use: async (name) => (name === 'db' ? db : name === 'user' ? user : null) };
 })();

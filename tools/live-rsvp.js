@@ -193,8 +193,11 @@
       guests: list.map(function (g) { return { name: g.name, age: g.age, comment: g.comment }; })
     };
     var data = new FormData();
-    data.append('data', JSON.stringify(payload));
-    list.reduce(function (chain, g, i) {
+    (window.heaDevice ? window.heaDevice() : Promise.resolve({})).then(function (device) {
+      payload.device = device;
+      data.append('data', JSON.stringify(payload));
+    }).then(function () {
+      return list.reduce(function (chain, g, i) {
       if (!g.file) return chain;
       return chain.then(function () {
         return shrink(g.file).then(function (blob) {
@@ -202,7 +205,8 @@
           data.append('photo-' + i, blob, fname);
         });
       });
-    }, Promise.resolve()).then(function () {
+    }, Promise.resolve());
+    }).then(function () {
       return post(data);
     }).then(function () {
       var lines = coming
