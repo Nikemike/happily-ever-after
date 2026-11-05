@@ -794,5 +794,14 @@ await migrateOnce('story-v2', async () => {
   }
   for (const doc of next) await store.put('story', doc.id, doc.data);
 });
+// Startup self-check of the tools that make the location-free copies.
+{
+  const v = await run(['-version'], 20_000);
+  console.log(v.code === 0 ? `Video tool ok: ${v.out.split('\n')[0]}` : `VIDEO TOOL MISSING: videos will stay out of the gallery (${v.err.slice(0, 200)})`);
+  try {
+    const probe = await sharp({ create: { width: 8, height: 8, channels: 3, background: '#fff' } }).jpeg().toBuffer();
+    console.log(`Photo tool ok: sharp ${sharp.versions.sharp}, libvips ${sharp.versions.vips}, test image ${probe.length} bytes`);
+  } catch (error) { console.log('PHOTO TOOL BROKEN: ' + error.message); }
+}
 for (const u of await store.list('uploads')) if (u.status !== 'public' && u.status !== 'private') enqueue(u.id);
 app.listen(PORT, () => console.log(`Listening on ${PORT} (store: ${store.kind}, uploads: ${s3 ? 'bucket' : localDir ? 'local folder' : 'off'})`));
