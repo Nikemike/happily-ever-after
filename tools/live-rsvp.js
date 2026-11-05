@@ -7,8 +7,8 @@
   var send = document.getElementById('rsvp-send');
   var progress = document.getElementById('rsvp-progress');
   var MAX_GUESTS = 20;
-  var AGES = [['keiki', 'Keiki', 'kid'], ['adult', 'Big Kahuna', 'adult'], ['kupuna', 'Kūpuna', 'senior']];
-  var AGE_LABEL = { keiki: 'Keiki', adult: 'Big Kahuna', kupuna: 'Kūpuna' };
+  var AGES = [['keiki', 'Little Kahuna', 'kid'], ['adult', 'Big Kahuna', 'adult'], ['kupuna', 'Elder', 'senior']];
+  var AGE_LABEL = { keiki: 'Little Kahuna', adult: 'Big Kahuna', kupuna: 'Elder' };
   var guests = [];
   var seq = 0;
   var photosOn = true;

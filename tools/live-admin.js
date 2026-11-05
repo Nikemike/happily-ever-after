@@ -39,7 +39,7 @@
   });
 
   /* ---------- RSVPs ---------- */
-  const AGE = { keiki: 'Kid (keiki)', adult: 'Adult (big kahuna)', kupuna: 'Senior (kūpuna)' };
+  const AGE = { keiki: 'Little Kahuna (kid)', adult: 'Big Kahuna (adult)', kupuna: 'Elder (senior)' };
   const plural = (n, one, many) => n + ' ' + (n === 1 ? one : many);
   let rsvps = [], rsvpConfirm = null;
   function guestList(r) {

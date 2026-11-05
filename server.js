@@ -449,7 +449,7 @@ app.get('/api/admin/rsvps', requireAdmin, async (req, res) => {
 app.get('/api/admin/rsvps.csv', requireAdmin, async (req, res) => {
   const rows = (await store.list('rsvps')).sort((a, b) => String(a.name).localeCompare(String(b.name)));
   const esc = (v) => { const s = String(v ?? ''); return /[",\r\n]/.test(s) || /^[=+\-@\t]/.test(s) ? '"' + s.replace(/^([=+\-@\t])/, "'$1").replace(/"/g, '""') + '"' : s; };
-  const AGE = { keiki: 'Kid (keiki)', adult: 'Adult (big kahuna)', kupuna: 'Senior (kupuna)' };
+  const AGE = { keiki: 'Little Kahuna (kid)', adult: 'Big Kahuna (adult)', kupuna: 'Elder (senior)' };
   const lines = [['Reply from', 'Coming', 'Party size', 'Guest', 'Age group', 'Comment', 'Photo', 'First replied', 'Last changed'].join(',')];
   for (const r of rows) {
     const guests = Array.isArray(r.guests) && r.guests.length ? r.guests : [null];
