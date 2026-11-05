@@ -39,13 +39,53 @@
   });
 
   /* ---------- RSVPs ---------- */
+  const AGE = { keiki: 'Kid (keiki)', adult: 'Adult (big kahuna)', kupuna: 'Senior (kūpuna)' };
+  const plural = (n, one, many) => n + ' ' + (n === 1 ? one : many);
   let rsvps = [], rsvpConfirm = null;
+  function guestList(r) {
+    const ul = document.createElement('ul'); ul.className = 'guest-list';
+    r.guests.forEach((g) => {
+      const li = document.createElement('li');
+      if (g.photo && g.photo.id) {
+        const a = document.createElement('a');
+        a.href = '/rsvp-photo/' + encodeURIComponent(r.id) + '/' + encodeURIComponent(g.photo.id);
+        a.target = '_blank'; a.rel = 'noopener';
+        const img = document.createElement('img');
+        img.src = a.href; img.alt = 'Photo of ' + (g.name || 'guest'); img.loading = 'lazy';
+        a.appendChild(img); li.appendChild(a);
+      } else {
+        const none = document.createElement('div'); none.className = 'nophoto'; none.setAttribute('aria-hidden', 'true');
+        li.appendChild(none);
+      }
+      const who = document.createElement('div'); who.className = 'who';
+      const b = document.createElement('b'); b.textContent = g.name || 'No name';
+      const small = document.createElement('small'); small.textContent = AGE[g.age] || 'Age group not given';
+      who.append(b, small);
+      if (g.comment) { const q = document.createElement('q'); q.textContent = g.comment; who.appendChild(q); }
+      li.appendChild(who);
+      ul.appendChild(li);
+    });
+    return ul;
+  }
   function drawRsvps() {
     const yes = rsvps.filter((r) => r.attending === 'yes');
     const people = yes.reduce((n, r) => n + (Number(r.count) || 0), 0);
     const no = rsvps.length - yes.length;
+    const ages = { adult: 0, keiki: 0, kupuna: 0 };
+    let unlisted = 0;
+    yes.forEach((r) => {
+      const list = Array.isArray(r.guests) ? r.guests : [];
+      list.forEach((g) => { if (g.age in ages) ages[g.age]++; });
+      unlisted += Math.max(0, (Number(r.count) || 0) - list.length);
+    });
+    const split = [];
+    if (ages.adult) split.push(plural(ages.adult, 'adult', 'adults'));
+    if (ages.keiki) split.push(plural(ages.keiki, 'kid', 'kids'));
+    if (ages.kupuna) split.push(plural(ages.kupuna, 'senior', 'seniors'));
+    if (unlisted) split.push(unlisted + ' without an age group');
     $('admin-rsvp-summary').textContent = rsvps.length
-      ? rsvps.length + (rsvps.length === 1 ? ' reply' : ' replies') + ': ' + yes.length + ' coming (' + people + (people === 1 ? ' person' : ' people') + '), ' + no + ' can’t make it.'
+      ? plural(rsvps.length, 'reply', 'replies') + ': ' + yes.length + ' coming (' + plural(people, 'person', 'people') +
+        (split.length ? ': ' + split.join(', ') : '') + '), ' + no + ' can’t make it.'
       : 'No replies yet.';
     $('admin-rsvp-rows').replaceChildren(...rsvps.map((r) => {
       const li = document.createElement('li'); li.className = 'row';
@@ -54,6 +94,7 @@
       const span = document.createElement('span');
       span.textContent = (r.attending === 'yes' ? 'Coming, party of ' + r.count : 'Can’t make it') + ' · ' + when(r.updatedAt);
       what.append(strong, span);
+      if (r.attending === 'yes' && Array.isArray(r.guests) && r.guests.length) what.appendChild(guestList(r));
       const acts = document.createElement('div'); acts.className = 'acts';
       if (rsvpConfirm === r.id) {
         acts.append(

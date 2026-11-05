@@ -32,7 +32,33 @@ rep('  .photos .card p { margin: 0; max-width: 42ch; }\n  .photos .tag { align-s
     padding: 0; font-size: 0.8125rem; text-align: center; color: var(--monstera);
   }
   .thumb figcaption { font-size: 0.8125rem; opacity: 0.8; overflow-wrap: anywhere; }
-  .sub-note { font-size: 0.9375rem; opacity: 0.85; }''')
+  .sub-note { font-size: 0.9375rem; opacity: 0.85; }
+  .field-hint { margin: 0; font-size: 0.9375rem; opacity: 0.82; }
+  .guests { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 16px; }
+  .guest {
+    display: flex; flex-direction: column; gap: 18px;
+    padding: 18px; border: 1.5px dashed var(--line-strong); border-radius: 6px; background: var(--paper);
+  }
+  .guest-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 34px; }
+  .guest-title { font-size: 0.8125rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--thatch); }
+  .ages .choice { flex: 1 1 150px; }
+  .choice small, .opt { font-weight: 400; opacity: 0.75; }
+  .guest textarea { min-height: 72px; }
+  .guest-photo { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
+  .guest-photo input { flex: 1 1 200px; min-width: 0; }
+  .guest-photo img { width: 72px; height: 72px; object-fit: cover; border-radius: 4px; border: 1px solid var(--line); }
+  .reply .summary { white-space: pre-line; }
+  .guest-list { list-style: none; margin: 6px 0 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+  .guest-list li { display: flex; align-items: flex-start; gap: 12px; }
+  .guest-list a { flex: none; display: block; }
+  .guest-list img, .guest-list .nophoto {
+    flex: none; display: block; width: 56px; height: 56px; object-fit: cover;
+    border-radius: 4px; border: 1px solid var(--line); background: var(--field);
+  }
+  .guest-list .who { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+  .guest-list b, .guest-list q { overflow-wrap: anywhere; }
+  .guest-list small { font-size: 0.875rem; opacity: 0.8; }
+  .guest-list q { font-style: italic; font-size: 0.9375rem; }''')
 
 # ---------- RSVP reply panel: saved for real ----------
 rep('''      <div class="reply" id="rsvp-reply" hidden>
@@ -42,13 +68,31 @@ rep('''      <div class="reply" id="rsvp-reply" hidden>
         <span class="tag">Saved</span>
         <p><strong>Thank you!</strong> Katie and Michael have your reply:</p>
         <p class="summary" id="rsvp-summary"></p>
-        <p class="sub-note">Plans changed? Send it again with the same name and it replaces this one.</p>''')
+        <p class="sub-note">Plans changed? Send it again with the same name and it replaces this one. Photos you already sent stay put unless you pick new ones.</p>''')
 rep('''        <div class="actions">
           <button class="button" type="submit" id="rsvp-send">Send RSVP</button>
-        </div>''', '''        <p class="error" id="rsvp-send-error" hidden></p>
+        </div>''', '''        <progress id="rsvp-progress" max="100" value="0" hidden></progress>
+        <p class="error" id="rsvp-send-error" hidden></p>
         <div class="actions">
           <button class="button" type="submit" id="rsvp-send">Send RSVP</button>
         </div>''')
+
+# ---------- RSVP: one card per guest instead of a party-size stepper ----------
+rep('''        <div class="field" id="rsvp-count-field">
+          <label class="q" for="rsvp-count">How many in your party, counting you?</label>
+          <div class="stepper">
+            <button type="button" id="rsvp-count-down" aria-label="One fewer">&minus;</button>
+            <input type="number" id="rsvp-count" name="count" min="1" max="20" value="1" inputmode="numeric">
+            <button type="button" id="rsvp-count-up" aria-label="One more">+</button>
+          </div>
+        </div>''', '''        <fieldset class="field" id="rsvp-guests-field">
+          <legend class="q">Who\u2019s in your canoe?</legend>
+          <p class="field-hint">Everyone coming in your group, you included. A name and age group for each paddler, please. A photo or a comment is optional, but highly encouraged.</p>
+          <ol class="guests" id="rsvp-guests"></ol>
+          <div class="actions">
+            <button class="button quiet" type="button" id="rsvp-add-guest">+ Add another paddler</button>
+          </div>
+        </fieldset>''')
 
 # ---------- Photos tab: real upload form ----------
 a = s.index('    <div class="card">\n      <p>Add your photos from the party')
@@ -124,43 +168,9 @@ rep('''    <button class="button quiet" type="button" id="admin-close">Back to t
 first_start = s.index('<script>')
 first_end = s.index('</script>', first_start) + len('</script>')
 first = s[first_start:first_end]
-old_submit = first[first.index("  form.addEventListener('submit', function (event) {"):first.index("  document.getElementById('rsvp-edit')")]
-new_submit = '''  form.addEventListener('submit', function (event) {
-    event.preventDefault();
-    var name = nameInput.value.trim();
-    var answered = yes.checked || no.checked;
-    var sendError = document.getElementById('rsvp-send-error');
-    var send = document.getElementById('rsvp-send');
-    nameError.hidden = name !== '';
-    attendingError.hidden = answered;
-    sendError.hidden = true;
-    if (name === '') { nameInput.focus(); return; }
-    if (!answered) { yes.focus(); return; }
-
-    var n = clampCount(count.value);
-    send.disabled = true;
-    fetch('/api/rsvp', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name: name, attending: yes.checked ? 'yes' : 'no', count: n })
-    }).then(function (r) {
-      return r.json().catch(function () { return {}; }).then(function (out) {
-        if (!r.ok) throw new Error(out.error || 'Your reply did not save. Try again in a moment.');
-      });
-    }).then(function () {
-      var line = yes.checked
-        ? name + ' \\u00b7 Coming \\u00b7 ' + (n === 1 ? 'Party of 1' : 'Party of ' + n)
-        : name + ' \\u00b7 Can\\u2019t make it';
-      document.getElementById('rsvp-summary').textContent = line;
-      form.hidden = true;
-      reply.hidden = false;
-    }).catch(function (error) {
-      sendError.textContent = error.message;
-      sendError.hidden = false;
-    }).then(function () { send.disabled = false; });
-  });
-
-'''
+rsvp_js = open(os.path.join(here, 'live-rsvp.js'), encoding='utf-8').read()
+old_submit = first[first.index("  var countField = document.getElementById('rsvp-count-field');"):first.index("  document.getElementById('rsvp-edit')")]
+new_submit = rsvp_js
 first_new = first.replace(old_submit, new_submit)
 assert first_new != first
 s = s[:first_start] + first_new + s[first_end:]
@@ -189,6 +199,7 @@ doc = ('<!doctype html>\n<html lang="en">\n<head>\n<meta charset="utf-8">\n'
        '<meta name="description" content="Katie &amp; Michael’s Happily Ever After Party. February 20, 2027, Naples, Florida.">\n'
        '<style>html{color-scheme:light}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>\n'
        + head + '\n</head>\n<body>' + body.rstrip() + '\n</body>\n</html>\n')
+assert 'rsvp-count' not in doc and 'clampCount' not in doc
 assert 'Nothing was saved' not in doc and 'Not switched on in this preview' not in doc
 open(out, 'w', encoding='utf-8').write(doc)
 print('built', out, len(doc), 'bytes')

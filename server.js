@@ -235,26 +235,136 @@ app.post('/api/logout', (req, res) => {
 /* ----- RSVP ----- */
 
 // One reply per name: sending again with the same name replaces the earlier reply.
-app.post('/api/rsvp', limit('rsvp', 30, 60 * 60_000), json, async (req, res) => {
-  const name = clean(req.body?.name, 120);
-  const attending = req.body?.attending === 'yes' ? 'yes' : req.body?.attending === 'no' ? 'no' : '';
-  let count = parseInt(req.body?.count, 10);
-  if (!name) return res.status(400).json({ error: 'Add your name so we know who is replying.' });
-  if (!attending) return res.status(400).json({ error: 'Choose yes or no.' });
-  if (attending === 'no') count = 0;
-  else if (!(count >= 1)) count = 1;
-  count = Math.min(count, 20);
-  const id = crypto.createHash('sha256').update(name.toLowerCase().replace(/\s+/g, ' ')).digest('base64url').slice(0, 22);
-  try {
-    const old = await store.get('rsvps', id);
-    await store.put('rsvps', id, {
-      name, attending, count,
-      createdAt: old?.createdAt || new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
+// A "yes" lists every person coming: name and age group required, photo and comment optional.
+const AGE_GROUPS = ['keiki', 'adult', 'kupuna'];
+const MAX_GUESTS = 20;
+const MAX_RSVP_PHOTO_BYTES = 25 * 1024 * 1024;
+const normName = (v) => String(v || '').toLowerCase().replace(/\s+/g, ' ').trim();
+const rsvpId = (name) => crypto.createHash('sha256').update(normName(name)).digest('base64url').slice(0, 22);
+
+function checkRsvp(body) {
+  const name = clean(body?.name, 120);
+  const attending = body?.attending === 'yes' ? 'yes' : body?.attending === 'no' ? 'no' : '';
+  if (!name) return { error: 'Add your name so we know who is replying.' };
+  if (!attending) return { error: 'Choose yes or no.' };
+  if (attending === 'no') return { reply: { name, attending, count: 0, guests: [] } };
+  if (Array.isArray(body.guests)) {
+    if (!body.guests.length) return { error: 'Add at least one paddler.' };
+    if (body.guests.length > MAX_GUESTS) return { error: `That is more than ${MAX_GUESTS} paddlers. Send the rest in a second reply.` };
+    const guests = [];
+    for (const [i, g] of body.guests.entries()) {
+      const gname = clean(g?.name, 120);
+      const age = AGE_GROUPS.includes(g?.age) ? g.age : '';
+      if (!gname) return { error: `Paddler ${i + 1} needs a name.` };
+      if (!age) return { error: `Pick an age group for ${gname}.` };
+      guests.push({ name: gname, age, comment: clean(g?.comment, 300), photo: null });
+    }
+    return { reply: { name, attending, count: guests.length, guests } };
+  }
+  // Older form (party size only), in case a page loaded before this update sends a reply.
+  let count = parseInt(body?.count, 10);
+  if (!(count >= 1)) count = 1;
+  return { reply: { name, attending, count: Math.min(count, MAX_GUESTS), guests: [] } };
+}
+
+// Reads a multipart RSVP: a "data" JSON field plus photo-<n> files (n = paddler index).
+// Photos go straight to the bucket; the caller deletes them if the reply is not saved.
+function readRsvpForm(req) {
+  return new Promise((resolve) => {
+    let busboy;
+    try {
+      busboy = Busboy({ headers: req.headers, limits: { files: MAX_GUESTS, fileSize: MAX_RSVP_PHOTO_BYTES, fields: 5, fieldSize: 64 * 1024 } });
+    } catch {
+      return resolve({ failed: true, photos: new Map(), problems: [] });
+    }
+    let data = null, finished = false;
+    const photos = new Map(), problems = [], pending = [];
+    const finish = async (failed) => {
+      if (finished) return;
+      finished = true;
+      await Promise.allSettled(pending);
+      resolve({ data, photos, problems, failed });
+    };
+    busboy.on('field', (name, value) => {
+      if (name === 'data') { try { data = JSON.parse(value); } catch { data = null; } }
     });
-    res.json({ ok: true, updated: !!old });
-  } catch (error) {
-    console.error('rsvp', error);
+    busboy.on('file', (field, stream, info) => {
+      const m = /^photo-(\d{1,2})$/.exec(field);
+      const index = m ? Number(m[1]) : -1;
+      const type = (info.mimeType || '').toLowerCase();
+      if (index < 0 || index >= MAX_GUESTS || photos.has(index) || !uploadsEnabled) { stream.resume(); return; }
+      if (!type.startsWith('image/')) { problems.push({ index, why: 'type' }); stream.resume(); return; }
+      const id = newId();
+      const ext = (path.extname(info.filename || '').toLowerCase().replace(/[^.a-z0-9]/g, '') || '').slice(0, 8);
+      const key = `rsvp-photos/${new Date().toISOString().slice(0, 10)}/${id}${ext}`;
+      const photo = { id, key, type, size: 0 };
+      photos.set(index, photo);
+      let tooBig = false;
+      stream.on('data', (chunk) => { photo.size += chunk.length; });
+      stream.on('limit', () => { tooBig = true; });
+      pending.push(
+        putObject(key, stream, type)
+          .then(() => { if (tooBig) problems.push({ index, why: 'size' }); })
+          .catch((error) => { console.error('rsvp photo', error); stream.resume(); problems.push({ index, why: 'save' }); })
+      );
+    });
+    busboy.on('error', (error) => { console.error('rsvp form', error); finish(true); });
+    busboy.on('close', () => finish(false));
+    req.on('aborted', () => finish(true));
+    req.pipe(busboy);
+  });
+}
+
+const dropPhotos = async (list) => {
+  for (const p of list) { try { await deleteObject(p.key); } catch (error) { console.error('delete rsvp photo', error); } }
+};
+
+async function saveRsvp(reply, photos) {
+  const id = rsvpId(reply.name);
+  const old = await store.get('rsvps', id);
+  const oldGuests = Array.isArray(old?.guests) ? old.guests : [];
+  const kept = new Set();
+  reply.guests.forEach((g, i) => {
+    if (photos.has(i)) { g.photo = photos.get(i); return; }
+    // No new photo: keep the one this person sent before, matched by name.
+    const match = oldGuests.find((o) => o.photo && !kept.has(o.photo.id) && normName(o.name) === normName(g.name));
+    if (match) { g.photo = match.photo; kept.add(match.photo.id); }
+  });
+  const now = new Date().toISOString();
+  await store.put('rsvps', id, { ...reply, createdAt: old?.createdAt || now, updatedAt: now });
+  await dropPhotos(oldGuests.map((g) => g.photo).filter((p) => p && !kept.has(p.id)));
+  return { updated: !!old };
+}
+
+app.post('/api/rsvp', limit('rsvp', 30, 60 * 60_000), json, async (req, res) => {
+  if (!req.is('multipart/form-data')) {
+    const { reply, error } = checkRsvp(req.body);
+    if (error) return res.status(400).json({ error });
+    try { res.json({ ok: true, ...(await saveRsvp(reply, new Map())) }); }
+    catch (err) { console.error('rsvp', err); res.status(500).json({ error: 'Your reply did not save. Try again in a moment.' }); }
+    return;
+  }
+  const form = await readRsvpForm(req);
+  const uploaded = [...form.photos.values()];
+  const fail = async (status, error) => { await dropPhotos(uploaded); if (!res.headersSent) res.status(status).json({ error }); };
+  if (form.failed) return fail(400, 'The reply was interrupted. Try again.');
+  const { reply, error } = checkRsvp(form.data);
+  if (error) return fail(400, error);
+  if (form.problems.length) {
+    const { index, why } = form.problems[0];
+    const who = reply.guests[index]?.name || `paddler ${index + 1}`;
+    return fail(400, why === 'size' ? `The photo for ${who} is too big. Pick one under 25 MB.`
+      : why === 'type' ? `The photo for ${who} needs to be a picture file.`
+      : `The photo for ${who} did not upload. Try again.`);
+  }
+  // Photos for paddlers who are not in the reply (or for a "no") are not kept.
+  const usable = new Map([...form.photos].filter(([i]) => i < reply.guests.length));
+  await dropPhotos([...form.photos].filter(([i]) => i >= reply.guests.length).map(([, p]) => p));
+  try {
+    res.json({ ok: true, ...(await saveRsvp(reply, usable)) });
+  } catch (err) {
+    console.error('rsvp', err);
+    await dropPhotos([...usable.values()]);
     res.status(500).json({ error: 'Your reply did not save. Try again in a moment.' });
   }
 });
@@ -302,17 +412,31 @@ app.post('/api/upload', limit('upload', 60, 60 * 60_000), (req, res) => {
   req.pipe(busboy);
 });
 
+async function sendObject(res, key, type) {
+  if (s3) {
+    const url = await getSignedUrl(s3, new GetObjectCommand({ Bucket: env.BUCKET, Key: key }), { expiresIn: 3600 });
+    return res.redirect(302, url);
+  }
+  if (localDir) return res.type(type).sendFile(path.join(localDir, key.replace(/\//g, '_')));
+  res.status(404).end();
+}
+
 // Admin only for now: there is no public gallery yet.
 app.get('/media/:id', requireAdmin, async (req, res) => {
   if (!ID_RE.test(req.params.id)) return res.status(404).end();
   const doc = await store.get('uploads', req.params.id);
   if (!doc) return res.status(404).end();
-  if (s3) {
-    const url = await getSignedUrl(s3, new GetObjectCommand({ Bucket: env.BUCKET, Key: doc.key }), { expiresIn: 3600 });
-    return res.redirect(302, url);
-  }
-  if (localDir) return res.type(doc.type).sendFile(path.join(localDir, doc.key.replace(/\//g, '_')));
-  res.status(404).end();
+  await sendObject(res, doc.key, doc.type);
+});
+
+// RSVP photos: Admin only.
+app.get('/rsvp-photo/:rsvp/:photo', requireAdmin, async (req, res) => {
+  const { rsvp, photo } = req.params;
+  if (!ID_RE.test(rsvp) || !ID_RE.test(photo)) return res.status(404).end();
+  const doc = await store.get('rsvps', rsvp);
+  const p = (Array.isArray(doc?.guests) ? doc.guests : []).map((g) => g.photo).find((x) => x && x.id === photo);
+  if (!p) return res.status(404).end();
+  await sendObject(res, p.key, p.type);
 });
 
 /* ----- admin ----- */
@@ -324,13 +448,22 @@ app.get('/api/admin/rsvps', requireAdmin, async (req, res) => {
 });
 app.get('/api/admin/rsvps.csv', requireAdmin, async (req, res) => {
   const rows = (await store.list('rsvps')).sort((a, b) => String(a.name).localeCompare(String(b.name)));
-  const esc = (v) => { const s = String(v ?? ''); return /[",\n]/.test(s) || /^[=+\-@]/.test(s) ? '"' + s.replace(/^([=+\-@])/, "'$1").replace(/"/g, '""') + '"' : s; };
-  const lines = [['Name', 'Coming', 'Party size', 'First replied', 'Last changed'].join(',')]
-    .concat(rows.map((r) => [r.name, r.attending, r.count, r.createdAt, r.updatedAt].map(esc).join(',')));
+  const esc = (v) => { const s = String(v ?? ''); return /[",\r\n]/.test(s) || /^[=+\-@\t]/.test(s) ? '"' + s.replace(/^([=+\-@\t])/, "'$1").replace(/"/g, '""') + '"' : s; };
+  const AGE = { keiki: 'Kid (keiki)', adult: 'Adult (big kahuna)', kupuna: 'Senior (kupuna)' };
+  const lines = [['Reply from', 'Coming', 'Party size', 'Guest', 'Age group', 'Comment', 'Photo', 'First replied', 'Last changed'].join(',')];
+  for (const r of rows) {
+    const guests = Array.isArray(r.guests) && r.guests.length ? r.guests : [null];
+    for (const g of guests) {
+      lines.push([r.name, r.attending, r.count, g?.name, g ? AGE[g.age] : '', g?.comment, g ? (g.photo ? 'yes' : 'no') : '', r.createdAt, r.updatedAt].map(esc).join(','));
+    }
+  }
   res.setHeader('Content-Disposition', 'attachment; filename="rsvps.csv"');
   res.type('text/csv').send(lines.join('\n') + '\n');
 });
 app.delete('/api/admin/rsvps/:id', requireAdmin, async (req, res) => {
+  const doc = ID_RE.test(req.params.id) ? await store.get('rsvps', req.params.id) : null;
+  if (!doc) return res.status(404).json({ error: 'That reply is already gone.' });
+  await dropPhotos((Array.isArray(doc.guests) ? doc.guests : []).map((g) => g.photo).filter(Boolean));
   await store.del('rsvps', req.params.id);
   res.json({ ok: true });
 });

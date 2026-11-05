@@ -352,6 +352,32 @@
   }
   .thumb figcaption { font-size: 0.8125rem; opacity: 0.8; overflow-wrap: anywhere; }
   .sub-note { font-size: 0.9375rem; opacity: 0.85; }
+  .field-hint { margin: 0; font-size: 0.9375rem; opacity: 0.82; }
+  .guests { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 16px; }
+  .guest {
+    display: flex; flex-direction: column; gap: 18px;
+    padding: 18px; border: 1.5px dashed var(--line-strong); border-radius: 6px; background: var(--paper);
+  }
+  .guest-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 34px; }
+  .guest-title { font-size: 0.8125rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--thatch); }
+  .ages .choice { flex: 1 1 150px; }
+  .choice small, .opt { font-weight: 400; opacity: 0.75; }
+  .guest textarea { min-height: 72px; }
+  .guest-photo { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
+  .guest-photo input { flex: 1 1 200px; min-width: 0; }
+  .guest-photo img { width: 72px; height: 72px; object-fit: cover; border-radius: 4px; border: 1px solid var(--line); }
+  .reply .summary { white-space: pre-line; }
+  .guest-list { list-style: none; margin: 6px 0 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+  .guest-list li { display: flex; align-items: flex-start; gap: 12px; }
+  .guest-list a { flex: none; display: block; }
+  .guest-list img, .guest-list .nophoto {
+    flex: none; display: block; width: 56px; height: 56px; object-fit: cover;
+    border-radius: 4px; border: 1px solid var(--line); background: var(--field);
+  }
+  .guest-list .who { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+  .guest-list b, .guest-list q { overflow-wrap: anywhere; }
+  .guest-list small { font-size: 0.875rem; opacity: 0.8; }
+  .guest-list q { font-style: italic; font-size: 0.9375rem; }
 
   /* ---------- our story ---------- */
   .story { padding-inline: clamp(20px, 6vw, 72px); padding-block: 8px 56px; }
@@ -887,15 +913,16 @@
           <p class="error" id="rsvp-attending-error" hidden>Choose yes or no.</p>
         </fieldset>
 
-        <div class="field" id="rsvp-count-field">
-          <label class="q" for="rsvp-count">How many in your party, counting you?</label>
-          <div class="stepper">
-            <button type="button" id="rsvp-count-down" aria-label="One fewer">&minus;</button>
-            <input type="number" id="rsvp-count" name="count" min="1" max="20" value="1" inputmode="numeric">
-            <button type="button" id="rsvp-count-up" aria-label="One more">+</button>
+        <fieldset class="field" id="rsvp-guests-field">
+          <legend class="q">Who’s in your canoe?</legend>
+          <p class="field-hint">Everyone coming in your group, you included. A name and age group for each paddler, please. A photo or a comment is optional, but highly encouraged.</p>
+          <ol class="guests" id="rsvp-guests"></ol>
+          <div class="actions">
+            <button class="button quiet" type="button" id="rsvp-add-guest">+ Add another paddler</button>
           </div>
-        </div>
+        </fieldset>
 
+        <progress id="rsvp-progress" max="100" value="0" hidden></progress>
         <p class="error" id="rsvp-send-error" hidden></p>
         <div class="actions">
           <button class="button" type="submit" id="rsvp-send">Send RSVP</button>
@@ -906,7 +933,7 @@
         <span class="tag">Saved</span>
         <p><strong>Thank you!</strong> Katie and Michael have your reply:</p>
         <p class="summary" id="rsvp-summary"></p>
-        <p class="sub-note">Plans changed? Send it again with the same name and it replaces this one.</p>
+        <p class="sub-note">Plans changed? Send it again with the same name and it replaces this one. Photos you already sent stay put unless you pick new ones.</p>
         <div class="actions">
           <button class="button quiet" type="button" id="rsvp-edit">Change reply</button>
         </div>
@@ -1214,58 +1241,228 @@
   var attendingError = document.getElementById('rsvp-attending-error');
   var yes = document.getElementById('rsvp-yes');
   var no = document.getElementById('rsvp-no');
-  var countField = document.getElementById('rsvp-count-field');
-  var count = document.getElementById('rsvp-count');
+  // Live RSVP: one card per person coming. Name and age group are required;
+  // a photo and a comment are optional. Inserted into the page's first script by build_page.py.
+  var guestsField = document.getElementById('rsvp-guests-field');
+  var guestList = document.getElementById('rsvp-guests');
+  var addGuestButton = document.getElementById('rsvp-add-guest');
+  var sendError = document.getElementById('rsvp-send-error');
+  var send = document.getElementById('rsvp-send');
+  var progress = document.getElementById('rsvp-progress');
+  var MAX_GUESTS = 20;
+  var AGES = [['keiki', 'Keiki', 'kid'], ['adult', 'Big Kahuna', 'adult'], ['kupuna', 'Kūpuna', 'senior']];
+  var AGE_LABEL = { keiki: 'Keiki', adult: 'Big Kahuna', kupuna: 'Kūpuna' };
+  var guests = [];
+  var seq = 0;
+  var photosOn = true;
 
-  function clampCount(n) {
-    n = parseInt(n, 10);
-    if (isNaN(n) || n < 1) n = 1;
-    if (n > 20) n = 20;
-    return n;
+  function renumber() {
+    guests.forEach(function (g, i) {
+      g.title.textContent = 'Paddler ' + (i + 1);
+      g.remove.hidden = guests.length < 2;
+    });
+    addGuestButton.disabled = guests.length >= MAX_GUESTS;
+    addGuestButton.textContent = guests.length >= MAX_GUESTS ? 'Canoe is full (' + MAX_GUESTS + ')' : '+ Add another paddler';
   }
-  function syncCountField() { countField.hidden = no.checked; }
 
-  document.getElementById('rsvp-count-down').addEventListener('click', function () { count.value = clampCount(clampCount(count.value) - 1); });
-  document.getElementById('rsvp-count-up').addEventListener('click', function () { count.value = clampCount(clampCount(count.value) + 1); });
-  count.addEventListener('change', function () { count.value = clampCount(count.value); });
-  yes.addEventListener('change', function () { syncCountField(); attendingError.hidden = true; });
-  no.addEventListener('change', function () { syncCountField(); attendingError.hidden = true; });
-  nameInput.addEventListener('input', function () { nameError.hidden = true; });
-  syncCountField();
+  function addGuest(focus) {
+    var n = ++seq;
+    var li = document.createElement('li');
+    li.className = 'guest';
+    li.innerHTML =
+      '<div class="guest-head"><strong class="guest-title"></strong>' +
+      '<button type="button" class="mini guest-remove">Remove</button></div>' +
+      '<div class="field"><label class="q" for="g' + n + '-name">Name</label>' +
+      '<input type="text" id="g' + n + '-name" maxlength="120" autocomplete="off">' +
+      '<p class="error" hidden>Add a name for this paddler.</p></div>' +
+      '<fieldset class="field"><legend class="q">Age group</legend><div class="choices ages">' +
+      AGES.map(function (a) {
+        return '<label class="choice"><input type="radio" name="g' + n + '-age" value="' + a[0] + '"> ' +
+          a[1] + ' <small>(' + a[2] + ')</small></label>';
+      }).join('') +
+      '</div><p class="error" hidden>Pick an age group.</p></fieldset>' +
+      '<div class="field guest-photo-field"><label class="q" for="g' + n + '-photo">Snap of this paddler <span class="opt">(optional)</span></label>' +
+      '<div class="guest-photo"><img alt="" hidden><input type="file" id="g' + n + '-photo" accept="image/*">' +
+      '<button type="button" class="mini" hidden>Remove photo</button></div></div>' +
+      '<div class="field"><label class="q" for="g' + n + '-comment">A fun or funny comment <span class="opt">(optional)</span></label>' +
+      '<textarea id="g' + n + '-comment" maxlength="300" rows="2" placeholder="Signature dance move, go-to tiki drink, hidden talent…"></textarea></div>';
+
+    var g = {
+      li: li,
+      file: null,
+      touched: false,
+      title: li.querySelector('.guest-title'),
+      remove: li.querySelector('.guest-remove'),
+      name: li.querySelector('input[type="text"]'),
+      nameError: li.querySelectorAll('.error')[0],
+      ages: Array.prototype.slice.call(li.querySelectorAll('input[type="radio"]')),
+      ageError: li.querySelectorAll('.error')[1],
+      photoField: li.querySelector('.guest-photo-field'),
+      photo: li.querySelector('input[type="file"]'),
+      preview: li.querySelector('.guest-photo img'),
+      clearPhoto: li.querySelector('.guest-photo button'),
+      comment: li.querySelector('textarea')
+    };
+    g.photoField.hidden = !photosOn;
+
+    g.name.addEventListener('input', function () { g.touched = g.name.value !== ''; g.nameError.hidden = true; });
+    g.ages.forEach(function (r) { r.addEventListener('change', function () { g.ageError.hidden = true; }); });
+    g.photo.addEventListener('change', function () {
+      var f = g.photo.files && g.photo.files[0];
+      if (g.preview.src) URL.revokeObjectURL(g.preview.src);
+      g.file = f || null;
+      g.preview.hidden = !f;
+      g.clearPhoto.hidden = !f;
+      if (f) { g.preview.src = URL.createObjectURL(f); g.preview.alt = 'Chosen photo'; } else { g.preview.removeAttribute('src'); }
+    });
+    g.clearPhoto.addEventListener('click', function () {
+      g.photo.value = '';
+      g.photo.dispatchEvent(new Event('change'));
+      g.photo.focus();
+    });
+    g.remove.addEventListener('click', function () {
+      var i = guests.indexOf(g);
+      if (i < 0 || guests.length < 2) return;
+      if (g.preview.src) URL.revokeObjectURL(g.preview.src);
+      guests.splice(i, 1);
+      li.remove();
+      renumber();
+      (guests[i] || guests[i - 1]).name.focus();
+    });
+
+    guests.push(g);
+    guestList.appendChild(li);
+    if (guests.length === 1 && nameInput.value.trim()) g.name.value = nameInput.value.trim();
+    renumber();
+    if (focus) g.name.focus();
+  }
+
+  // The first paddler's name follows "Your name" until it is typed in directly.
+  nameInput.addEventListener('input', function () {
+    nameError.hidden = true;
+    var first = guests[0];
+    if (first && !first.touched) first.name.value = nameInput.value.trim();
+  });
+  function syncGuests() { guestsField.hidden = no.checked; }
+  yes.addEventListener('change', function () { syncGuests(); attendingError.hidden = true; });
+  no.addEventListener('change', function () { syncGuests(); attendingError.hidden = true; });
+  addGuestButton.addEventListener('click', function () { if (guests.length < MAX_GUESTS) addGuest(true); });
+  addGuest(false);
+  syncGuests();
+
+  // Hide the photo pickers if photo storage is not switched on (checked once the page has loaded).
+  window.addEventListener('DOMContentLoaded', function () {
+    if (!window.liveSession) return;
+    window.liveSession().then(function (s) {
+      photosOn = !!s.uploads;
+      guests.forEach(function (g) { g.photoField.hidden = !photosOn; });
+    });
+  });
+
+  // Phone photos are large: send a copy at most 1600 px on the long side.
+  function shrink(file) {
+    return new Promise(function (resolve) {
+      if (!/^image\/(jpeg|png|webp|heic|heif)$/i.test(file.type || '')) return resolve(file);
+      var url = URL.createObjectURL(file);
+      var img = new Image();
+      img.onload = function () {
+        var w = img.naturalWidth, h = img.naturalHeight;
+        var scale = Math.min(1, 1600 / Math.max(w, h));
+        if (!w || !h || (scale === 1 && file.size <= 1500000)) { URL.revokeObjectURL(url); return resolve(file); }
+        var c = document.createElement('canvas');
+        c.width = Math.round(w * scale);
+        c.height = Math.round(h * scale);
+        var ctx = c.getContext('2d');
+        ctx.fillStyle = '#fff';
+        ctx.fillRect(0, 0, c.width, c.height);
+        ctx.drawImage(img, 0, 0, c.width, c.height);
+        URL.revokeObjectURL(url);
+        c.toBlob(function (b) { resolve(b && b.size ? b : file); }, 'image/jpeg', 0.85);
+      };
+      img.onerror = function () { URL.revokeObjectURL(url); resolve(file); };
+      img.src = url;
+    });
+  }
+
+  function post(data) {
+    return new Promise(function (resolve, reject) {
+      var xhr = new XMLHttpRequest();
+      xhr.open('POST', '/api/rsvp');
+      xhr.upload.onprogress = function (e) {
+        if (e.lengthComputable && e.total > 200000) { progress.hidden = false; progress.value = Math.round((e.loaded / e.total) * 100); }
+      };
+      xhr.onload = function () {
+        var out = {};
+        try { out = JSON.parse(xhr.responseText); } catch (error) { /* keep the empty object */ }
+        if (xhr.status >= 200 && xhr.status < 300) resolve(out);
+        else reject(new Error(out.error || 'Your reply did not save. Try again in a moment.'));
+      };
+      xhr.onerror = function () { reject(new Error('The connection dropped. Try again.')); };
+      xhr.send(data);
+    });
+  }
 
   form.addEventListener('submit', function (event) {
     event.preventDefault();
     var name = nameInput.value.trim();
     var answered = yes.checked || no.checked;
-    var sendError = document.getElementById('rsvp-send-error');
-    var send = document.getElementById('rsvp-send');
     nameError.hidden = name !== '';
     attendingError.hidden = answered;
     sendError.hidden = true;
     if (name === '') { nameInput.focus(); return; }
     if (!answered) { yes.focus(); return; }
 
-    var n = clampCount(count.value);
-    send.disabled = true;
-    fetch('/api/rsvp', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name: name, attending: yes.checked ? 'yes' : 'no', count: n })
-    }).then(function (r) {
-      return r.json().catch(function () { return {}; }).then(function (out) {
-        if (!r.ok) throw new Error(out.error || 'Your reply did not save. Try again in a moment.');
+    var coming = yes.checked;
+    var firstBad = null;
+    var list = [];
+    if (coming) {
+      guests.forEach(function (g) {
+        var gname = g.name.value.trim();
+        var picked = g.ages.filter(function (r) { return r.checked; })[0];
+        g.nameError.hidden = gname !== '';
+        g.ageError.hidden = !!picked;
+        if (!firstBad && !gname) firstBad = g.name;
+        if (!firstBad && !picked) firstBad = g.ages[0];
+        list.push({ name: gname, age: picked ? picked.value : '', comment: g.comment.value.trim(), file: photosOn ? g.file : null });
       });
+      if (firstBad) { firstBad.focus(); return; }
+    }
+
+    send.disabled = true;
+    progress.value = 0;
+    var payload = {
+      name: name,
+      attending: coming ? 'yes' : 'no',
+      guests: list.map(function (g) { return { name: g.name, age: g.age, comment: g.comment }; })
+    };
+    var data = new FormData();
+    data.append('data', JSON.stringify(payload));
+    list.reduce(function (chain, g, i) {
+      if (!g.file) return chain;
+      return chain.then(function () {
+        return shrink(g.file).then(function (blob) {
+          var fname = blob === g.file ? (g.file.name || 'photo') : 'photo-' + (i + 1) + '.jpg';
+          data.append('photo-' + i, blob, fname);
+        });
+      });
+    }, Promise.resolve()).then(function () {
+      return post(data);
     }).then(function () {
-      var line = yes.checked
-        ? name + ' \u00b7 Coming \u00b7 ' + (n === 1 ? 'Party of 1' : 'Party of ' + n)
-        : name + ' \u00b7 Can\u2019t make it';
-      document.getElementById('rsvp-summary').textContent = line;
+      var lines = coming
+        ? [name + ' · Coming · ' + (list.length === 1 ? '1 paddler' : list.length + ' paddlers')].concat(list.map(function (g) {
+            return g.name + ' — ' + AGE_LABEL[g.age] + (g.file ? ' · photo' : '') + (g.comment ? ' · “' + g.comment + '”' : '');
+          }))
+        : [name + ' · Can’t make it'];
+      document.getElementById('rsvp-summary').textContent = lines.join('\n');
       form.hidden = true;
       reply.hidden = false;
     }).catch(function (error) {
       sendError.textContent = error.message;
       sendError.hidden = false;
-    }).then(function () { send.disabled = false; });
+    }).then(function () {
+      send.disabled = false;
+      progress.hidden = true;
+    });
   });
 
   document.getElementById('rsvp-edit').addEventListener('click', function () {
@@ -1990,13 +2187,53 @@
   });
 
   /* ---------- RSVPs ---------- */
+  const AGE = { keiki: 'Kid (keiki)', adult: 'Adult (big kahuna)', kupuna: 'Senior (kūpuna)' };
+  const plural = (n, one, many) => n + ' ' + (n === 1 ? one : many);
   let rsvps = [], rsvpConfirm = null;
+  function guestList(r) {
+    const ul = document.createElement('ul'); ul.className = 'guest-list';
+    r.guests.forEach((g) => {
+      const li = document.createElement('li');
+      if (g.photo && g.photo.id) {
+        const a = document.createElement('a');
+        a.href = '/rsvp-photo/' + encodeURIComponent(r.id) + '/' + encodeURIComponent(g.photo.id);
+        a.target = '_blank'; a.rel = 'noopener';
+        const img = document.createElement('img');
+        img.src = a.href; img.alt = 'Photo of ' + (g.name || 'guest'); img.loading = 'lazy';
+        a.appendChild(img); li.appendChild(a);
+      } else {
+        const none = document.createElement('div'); none.className = 'nophoto'; none.setAttribute('aria-hidden', 'true');
+        li.appendChild(none);
+      }
+      const who = document.createElement('div'); who.className = 'who';
+      const b = document.createElement('b'); b.textContent = g.name || 'No name';
+      const small = document.createElement('small'); small.textContent = AGE[g.age] || 'Age group not given';
+      who.append(b, small);
+      if (g.comment) { const q = document.createElement('q'); q.textContent = g.comment; who.appendChild(q); }
+      li.appendChild(who);
+      ul.appendChild(li);
+    });
+    return ul;
+  }
   function drawRsvps() {
     const yes = rsvps.filter((r) => r.attending === 'yes');
     const people = yes.reduce((n, r) => n + (Number(r.count) || 0), 0);
     const no = rsvps.length - yes.length;
+    const ages = { adult: 0, keiki: 0, kupuna: 0 };
+    let unlisted = 0;
+    yes.forEach((r) => {
+      const list = Array.isArray(r.guests) ? r.guests : [];
+      list.forEach((g) => { if (g.age in ages) ages[g.age]++; });
+      unlisted += Math.max(0, (Number(r.count) || 0) - list.length);
+    });
+    const split = [];
+    if (ages.adult) split.push(plural(ages.adult, 'adult', 'adults'));
+    if (ages.keiki) split.push(plural(ages.keiki, 'kid', 'kids'));
+    if (ages.kupuna) split.push(plural(ages.kupuna, 'senior', 'seniors'));
+    if (unlisted) split.push(unlisted + ' without an age group');
     $('admin-rsvp-summary').textContent = rsvps.length
-      ? rsvps.length + (rsvps.length === 1 ? ' reply' : ' replies') + ': ' + yes.length + ' coming (' + people + (people === 1 ? ' person' : ' people') + '), ' + no + ' can’t make it.'
+      ? plural(rsvps.length, 'reply', 'replies') + ': ' + yes.length + ' coming (' + plural(people, 'person', 'people') +
+        (split.length ? ': ' + split.join(', ') : '') + '), ' + no + ' can’t make it.'
       : 'No replies yet.';
     $('admin-rsvp-rows').replaceChildren(...rsvps.map((r) => {
       const li = document.createElement('li'); li.className = 'row';
@@ -2005,6 +2242,7 @@
       const span = document.createElement('span');
       span.textContent = (r.attending === 'yes' ? 'Coming, party of ' + r.count : 'Can’t make it') + ' · ' + when(r.updatedAt);
       what.append(strong, span);
+      if (r.attending === 'yes' && Array.isArray(r.guests) && r.guests.length) what.appendChild(guestList(r));
       const acts = document.createElement('div'); acts.className = 'acts';
       if (rsvpConfirm === r.id) {
         acts.append(
