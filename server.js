@@ -35,6 +35,10 @@ const env = process.env;
 const PORT = Number(env.PORT || 3000);
 
 const PUBLIC_COLLECTIONS = ['quotes', 'story', 'details', 'faq', 'awards', 'notes', 'cats', 'pages'];
+// Sections hidden from guests for now. Their content is kept and still shows for Admin.
+// The page hides a section's tab when it has nothing to show, so guests see no tab at all.
+// To bring Our Story back, remove 'story' from this list.
+const HIDDEN_FROM_GUESTS = ['story'];
 const ID_RE = /^[A-Za-z0-9_-]{1,64}$/;
 const MAX_DOC_BYTES = 300 * 1024;
 const MAX_UPLOAD_BYTES = 300 * 1024 * 1024; // per file
@@ -248,7 +252,8 @@ const json = express.json({ limit: '1mb' });
 app.get('/api/content', async (req, res) => {
   try {
     const out = {};
-    for (const c of PUBLIC_COLLECTIONS) out[c] = await store.list(c);
+    const admin = isAdmin(req);
+    for (const c of PUBLIC_COLLECTIONS) out[c] = HIDDEN_FROM_GUESTS.includes(c) && !admin ? [] : await store.list(c);
     res.setHeader('Cache-Control', 'no-store');
     res.json(out);
   } catch (error) {
