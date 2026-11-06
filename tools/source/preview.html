@@ -654,6 +654,7 @@
   }
   .cat figcaption { display: flex; flex-direction: column; gap: 4px; text-align: center; }
   .cat figcaption strong { font-family: var(--font-caps); font-weight: 600; font-size: 1.15rem; overflow-wrap: anywhere; }
+  .cat figcaption .age { font-size: 0.8125rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--thatch); }
   .cat figcaption p { margin: 0; font-size: 0.9375rem; line-height: 1.5; overflow-wrap: anywhere; }
   .photo-row { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
   .photo-row img { width: 96px; height: 96px; object-fit: cover; border: 4px solid var(--field); box-shadow: 0 0 0 1px var(--line-strong); }
@@ -836,7 +837,7 @@
     </header>
     <ul class="notes" id="notes-list" hidden></ul>
     <div class="cats-block" id="cats-block" hidden>
-      <h3 class="cats-title">Meet the cats</h3>
+      <h3 class="cats-title">Meet the crew</h3>
       <div class="cats" id="cats-grid"></div>
     </div>
     <p class="placeholder" id="know-placeholder">Good-to-know notes load here.</p>
@@ -1032,12 +1033,16 @@
     </div>
 
     <div class="card">
-      <h3>The cats</h3>
-      <p class="sub">Each cat shows with a photo and a blurb on the Good to Know tab. Photos are shrunk before saving.</p>
+      <h3>The pets</h3>
+      <p class="sub">Each pet shows with a photo and a blurb on the Good to Know tab. Photos are shrunk before saving.</p>
       <form id="admin-cat-form" novalidate>
         <div class="field">
           <label class="q" for="admin-cat-title">Name</label>
           <input type="text" id="admin-cat-title" maxlength="80" autocomplete="off">
+        </div>
+        <div class="field">
+          <label class="q" for="admin-cat-age">Age</label>
+          <input type="text" id="admin-cat-age" maxlength="30" autocomplete="off" placeholder="e.g. 4 years">
         </div>
         <div class="field">
           <label class="q" for="admin-cat-position">Position</label>
@@ -1057,7 +1062,7 @@
         </div>
         <p class="status" id="admin-cat-status" hidden></p>
         <div class="actions">
-          <button class="button" type="submit" id="admin-cat-save">Add cat</button>
+          <button class="button" type="submit" id="admin-cat-save">Add pet</button>
           <button class="button quiet" type="button" id="admin-cat-cancel" hidden>Cancel</button>
         </div>
       </form>
@@ -1195,7 +1200,7 @@
     faq: { coll: 'faq', noun: 'question' },
     award: { coll: 'awards', noun: 'superlative' },
     note: { coll: 'notes', noun: 'note' },
-    cat: { coll: 'cats', noun: 'cat' }
+    cat: { coll: 'cats', noun: 'pet' }
   };
   const state = {
     db: null, canEdit: false, storeGone: false, view: 'home',
@@ -1353,7 +1358,7 @@
     if (!bothReady) { applyVisibility(); return; }
     const ph = $('know-placeholder');
     ph.hidden = notes.length > 0 || cats.length > 0;
-    if (!ph.hidden) ph.textContent = 'Nothing here yet. Add notes and cats in Admin.';
+    if (!ph.hidden) ph.textContent = 'Nothing here yet. Add notes and pets in Admin.';
     $('notes-list').replaceChildren(...notes.map((note) => {
       const li = document.createElement('li');
       li.className = 'gtk-note';
@@ -1375,7 +1380,7 @@
       if (photo) {
         picture = document.createElement('img');
         picture.src = photo;
-        picture.alt = 'Photo of ' + (str(cat.title) || 'a cat');
+        picture.alt = 'Photo of ' + (str(cat.title) || 'a pet');
       } else {
         picture = document.createElement('div');
         picture.className = 'no-photo';
@@ -1385,6 +1390,12 @@
       const name = document.createElement('strong');
       name.textContent = str(cat.title) || 'Unnamed';
       caption.appendChild(name);
+      if (str(cat.age).trim()) {
+        const age = document.createElement('span');
+        age.className = 'age';
+        age.textContent = str(cat.age).trim();
+        caption.appendChild(age);
+      }
       if (str(cat.body).trim()) {
         const p = document.createElement('p');
         fillText(p, str(cat.body).trim());
@@ -1596,7 +1607,7 @@
 
   function resetForm(kind) {
     state.edit[kind] = null;
-    if (kind === 'cat') { photoDraft = undefined; $('admin-cat-photo').value = ''; showPhotoPreview(''); }
+    if (kind === 'cat') { photoDraft = undefined; $('admin-cat-photo').value = ''; showPhotoPreview(''); $('admin-cat-age').value = ''; }
     if (kind === 'quote') {
       el(kind, 'text').value = ''; el(kind, 'story').value = '';
       el(kind, 'save').textContent = 'Add quote';
@@ -1608,7 +1619,7 @@
     el(kind, 'cancel').hidden = true;
   }
   function pristine(kind) {
-    return !state.edit[kind] && !el(kind, 'title').value && !el(kind, 'body').value && !(kind === 'cat' && photoDraft !== undefined);
+    return !state.edit[kind] && !el(kind, 'title').value && !el(kind, 'body').value && !(kind === 'cat' && (photoDraft !== undefined || $('admin-cat-age').value));
   }
   function rowButton(label, danger, onClick) {
     const b = document.createElement('button');
@@ -1629,7 +1640,7 @@
         strong.textContent = num(item.position) + '. ' + (str(item.title) || 'Untitled');
         span.textContent = str(item.body) ? excerpt(str(item.body), 120) : 'No text yet';
         span.hidden = kind === 'award' && !str(item.body);
-        if (kind === 'cat') span.textContent = (str(item.body) ? excerpt(str(item.body), 100) : 'No blurb yet') + (safePhoto(item.photo) ? ' \u00b7 photo added' : ' \u00b7 no photo');
+        if (kind === 'cat') span.textContent = (str(item.age) ? str(item.age) + ' \u00b7 ' : '') + (str(item.body) ? excerpt(str(item.body), 100) : 'No blurb yet') + (safePhoto(item.photo) ? ' \u00b7 photo added' : ' \u00b7 no photo');
       }
       what.append(strong, span);
       const acts = document.createElement('div'); acts.className = 'acts';
@@ -1656,7 +1667,7 @@
     } else {
       el(kind, 'title').value = str(item.title); el(kind, 'body').value = str(item.body);
       el(kind, 'position').value = String(num(item.position));
-      if (kind === 'cat') { photoDraft = undefined; $('admin-cat-photo').value = ''; showPhotoPreview(safePhoto(item.photo)); }
+      if (kind === 'cat') { photoDraft = undefined; $('admin-cat-photo').value = ''; showPhotoPreview(safePhoto(item.photo)); $('admin-cat-age').value = str(item.age); }
     }
     el(kind, 'save').textContent = 'Save changes';
     el(kind, 'cancel').hidden = false; el(kind, 'status').hidden = true;
@@ -1688,6 +1699,7 @@
     const data = { title: title, body: el(kind, 'body').value.trim(), position: position };
     if (kind === 'cat') {
       const old = state.items.cat.find((c) => c.id === state.edit.cat);
+      data.age = $('admin-cat-age').value.trim();
       data.photo = photoDraft !== undefined ? photoDraft : (old ? safePhoto(old.photo) : '');
     }
     return data;

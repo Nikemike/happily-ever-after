@@ -799,6 +799,26 @@ await migrateOnce('story-v2', async () => {
   }
   for (const doc of next) await store.put('story', doc.id, doc.data);
 });
+// Pet photos and ages (Nov 2026). Matches existing cards by name, fills in only an empty photo or
+// age, and adds a card for each pet that has none. The cards as they were are kept in cats_backup_v1.
+await migrateOnce('pets-v1', async () => {
+  const pets = JSON.parse(fs.readFileSync(path.join(here, 'content', 'pets-v1.json'), 'utf8'));
+  const key = (v) => String(v || '').toLowerCase().replace(/[^a-z]/g, '');
+  const names = (title) => [key(title), ...String(title || '').split(/[\/,&]/).map(key)].filter(Boolean);
+  const cards = await store.list('cats');
+  for (const { id, ...data } of cards) await store.put('cats_backup_v1', id, data);
+  let last = cards.reduce((m, c) => Math.max(m, Number(c.position) || 0), 0);
+  for (const pet of pets) {
+    const card = cards.find((c) => names(c.title).includes(key(pet.name)));
+    if (card) {
+      const { id, ...data } = card;
+      await store.put('cats', id, { ...data, age: data.age || pet.age, photo: data.photo || pet.photo });
+    } else {
+      last += 1;
+      await store.put('cats', newId(), { title: pet.name, age: pet.age, body: '', photo: pet.photo, position: last });
+    }
+  }
+});
 // Startup self-check of the tools that make the location-free copies.
 {
   const v = await run(['-version'], 20_000);
