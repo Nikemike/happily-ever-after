@@ -34,7 +34,7 @@ const here = path.dirname(fileURLToPath(import.meta.url));
 const env = process.env;
 const PORT = Number(env.PORT || 3000);
 
-const PUBLIC_COLLECTIONS = ['quotes', 'story', 'details', 'faq', 'awards', 'notes', 'cats', 'pages'];
+const PUBLIC_COLLECTIONS = ['quotes', 'story', 'details', 'faq', 'awards', 'notes', 'cats', 'pages', 'registry'];
 // Sections hidden from guests for now. Their content is kept and still shows for Admin.
 // The page hides a section's tab when it has nothing to show, so guests see no tab at all.
 // To bring Our Story back, remove 'story' from this list.

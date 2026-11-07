@@ -562,7 +562,7 @@
     letter-spacing: 0.16em;
     text-transform: uppercase;
   }
-  .dress-page, .logistics, .faq { padding-inline: clamp(20px, 6vw, 72px); padding-block: 8px 56px; }
+  .dress-page, .logistics, .faq, .registry { padding-inline: clamp(20px, 6vw, 72px); padding-block: 8px 56px; }
   .dress-big {
     max-width: 20ch;
     margin: 0 auto 30px;
@@ -709,6 +709,26 @@
   .detail h3 { margin: 0; font-family: var(--font-caps); font-weight: 600; font-size: 1.35rem; line-height: 1.3; }
   .detail .body { display: flex; flex-direction: column; gap: 12px; }
   .soon { font-style: italic; opacity: 0.7; }
+  .registry-intro {
+    max-width: 30ch; margin: 0 auto 30px; text-align: center; color: var(--hibiscus-deep);
+    font-family: var(--font-smallcaps); font-size: clamp(1.35rem, 4.6vw, 1.9rem); line-height: 1.35;
+  }
+  .registry-lead {
+    margin: 22px auto 0; max-width: 34ch; text-align: center; color: var(--hibiscus-deep);
+    font-family: var(--font-smallcaps); font-size: clamp(1.2rem, 4vw, 1.6rem); line-height: 1.35;
+  }
+  .registry-list { list-style: none; margin: 0 auto; padding: 0; max-width: 640px; display: flex; flex-direction: column; gap: 14px; }
+  .gift {
+    display: flex; flex-direction: column; gap: 8px; padding: 18px 20px;
+    background: var(--card); border: 1px solid var(--line); border-radius: 6px;
+  }
+  .gift a.gift-link {
+    align-self: flex-start; font-family: var(--font-caps); font-weight: 600; font-size: 1.3rem; line-height: 1.3;
+    color: var(--monstera); text-decoration-color: var(--leaf); text-underline-offset: 4px; overflow-wrap: anywhere;
+  }
+  .gift a.gift-link::after { content: " \2197"; font-size: 0.9em; color: var(--leaf); }
+  .gift strong { font-family: var(--font-caps); font-weight: 600; font-size: 1.3rem; }
+  .gift p { margin: 0; line-height: 1.6; overflow-wrap: anywhere; }
   .sheet p a { color: var(--monstera); text-decoration-color: var(--leaf); text-underline-offset: 3px; overflow-wrap: anywhere; }
 
   @media (prefers-reduced-motion: reduce) {
@@ -727,6 +747,7 @@
     <a href="#faq" data-tab="faq">FAQ</a>
     <a href="#know" data-tab="know">Good to Know</a>
     <a href="#rsvp" data-tab="rsvp">RSVP</a>
+    <a href="#registry" data-tab="registry">Registry</a>
     <a href="#photos" data-tab="photos">Photos</a>
     <a href="#admin" data-tab="admin" hidden>Admin</a>
   </nav>
@@ -891,6 +912,16 @@
     </div>
   </section>
 
+  <section class="registry" id="registry" aria-labelledby="registry-title" data-view="registry">
+    <header>
+      <p class="eyebrow">Gifts</p>
+      <h2 id="registry-title">Registry</h2>
+    </header>
+    <p class="registry-intro">Look. We’ve already got a bunch of stuff. Feel no need to get us anything. However, if you insist, we are registered here:</p>
+    <ul class="registry-list" id="registry-list" hidden></ul>
+    <p class="placeholder" id="registry-placeholder">The registry loads here.</p>
+  </section>
+
   <section class="photos" id="photos" aria-labelledby="photos-title" data-view="photos">
     <header>
       <p class="eyebrow">Photos</p>
@@ -955,6 +986,39 @@
         </div>
       </form>
       <ul class="rows" id="admin-detail-rows"></ul>
+    </div>
+
+    <div class="card">
+      <h3>Registry</h3>
+      <p class="sub">Each registry shows as a link on the Registry tab, in position order. Guests don’t see the Registry tab until at least one is added.</p>
+      <form id="admin-gift-form" novalidate>
+        <div class="field">
+          <label class="q" for="admin-gift-lead">Lead-in line (optional)</label>
+          <textarea id="admin-gift-lead" maxlength="400" placeholder="Shown above this link, like the line about the Humane Society"></textarea>
+        </div>
+        <div class="field">
+          <label class="q" for="admin-gift-title">Link text</label>
+          <input type="text" id="admin-gift-title" maxlength="120" autocomplete="off" placeholder="e.g. Amazon">
+        </div>
+        <div class="field">
+          <label class="q" for="admin-gift-url">Link</label>
+          <input type="url" id="admin-gift-url" maxlength="600" autocomplete="off" inputmode="url" placeholder="https://">
+        </div>
+        <div class="field">
+          <label class="q" for="admin-gift-position">Position</label>
+          <input class="narrow" type="number" id="admin-gift-position" min="1" step="1" inputmode="numeric">
+        </div>
+        <div class="field">
+          <label class="q" for="admin-gift-body">Note (optional)</label>
+          <textarea id="admin-gift-body"></textarea>
+        </div>
+        <p class="status" id="admin-gift-status" hidden></p>
+        <div class="actions">
+          <button class="button" type="submit" id="admin-gift-save">Add registry</button>
+          <button class="button quiet" type="button" id="admin-gift-cancel" hidden>Cancel</button>
+        </div>
+      </form>
+      <ul class="rows" id="admin-gift-rows"></ul>
     </div>
 
     <div class="card">
@@ -1192,7 +1256,7 @@
   // Tabs, plus everything kept in the page's shared store so it can be edited from Admin
   // without republishing: quotes, Our Story chapters, Logistics sections, dress code details.
   const $ = (id) => document.getElementById(id);
-  const VIEWS = ['home', 'story', 'logistics', 'dress', 'faq', 'know', 'rsvp', 'photos', 'admin'];
+  const VIEWS = ['home', 'story', 'logistics', 'dress', 'faq', 'know', 'rsvp', 'registry', 'photos', 'admin'];
   const LISTS = {
     quote: { coll: 'quotes' },
     chapter: { coll: 'story', noun: 'chapter' },
@@ -1200,13 +1264,14 @@
     faq: { coll: 'faq', noun: 'question' },
     award: { coll: 'awards', noun: 'superlative' },
     note: { coll: 'notes', noun: 'note' },
-    cat: { coll: 'cats', noun: 'pet' }
+    cat: { coll: 'cats', noun: 'pet' },
+    gift: { coll: 'registry', noun: 'registry' }
   };
   const state = {
     db: null, canEdit: false, storeGone: false, view: 'home',
-    items: { quote: [], chapter: [], detail: [], faq: [], award: [], note: [], cat: [] },
-    ready: { quote: false, chapter: false, detail: false, faq: false, award: false, note: false, cat: false },
-    edit: { quote: null, chapter: null, detail: null, faq: null, award: null, note: null, cat: null },
+    items: { quote: [], chapter: [], detail: [], faq: [], award: [], note: [], cat: [], gift: [] },
+    ready: { quote: false, chapter: false, detail: false, faq: false, award: false, note: false, cat: false, gift: false },
+    edit: { quote: null, chapter: null, detail: null, faq: null, award: null, note: null, cat: null, gift: null },
     dress: '', dressReady: false, dressDirty: false,
     confirmDelete: null, showAll: false, busy: false
   };
@@ -1242,11 +1307,14 @@
   /* ---------- tabs ---------- */
   function available(view) {
     if (view === 'admin') return state.canEdit && !!state.db;
-    if (view === 'story' || view === 'logistics' || view === 'faq' || view === 'know') return $(view).dataset.empty !== '1';
+    if (view === 'story' || view === 'logistics' || view === 'faq' || view === 'know' || view === 'registry') return $(view).dataset.empty !== '1';
     return true;
   }
   function applyVisibility() {
-    if (!available(state.view)) state.view = 'home';
+    if (!available(state.view)) {
+      state.view = 'home';
+      try { if (location.hash && location.hash !== '#home') history.replaceState(null, '', '#home'); } catch (error) { /* hash is a convenience only */ }
+    }
     document.querySelectorAll('[data-view]').forEach((el) => { el.hidden = el.dataset.view !== state.view || el.dataset.empty === '1'; });
     document.querySelectorAll('.tabs a').forEach((a) => {
       a.hidden = !available(a.dataset.tab);
@@ -1344,6 +1412,44 @@
   }
   function renderDetails() { renderBlocks('detail', 'logistics', 'details-list', 'details-placeholder', 'No sections yet. Add the first one in Admin.', 'Details to come.'); }
   function renderFaq() { renderBlocks('faq', 'faq', 'faq-list', 'faq-placeholder', 'No questions yet. Add the first one in Admin.', 'Answer to come.'); }
+
+  /* ---------- Registry ---------- */
+  const webLink = (v) => { try { const u = new URL(str(v).trim()); return /^https?:$/.test(u.protocol) ? u.href : ''; } catch (error) { return ''; } };
+  function renderRegistry() {
+    const section = $('registry'), list = $('registry-list'), ph = $('registry-placeholder');
+    const items = state.items.gift;
+    if (state.storeGone || (state.ready.gift && !items.length && !state.canEdit)) { section.dataset.empty = '1'; applyVisibility(); return; }
+    delete section.dataset.empty;
+    if (!state.ready.gift) { applyVisibility(); return; }
+    if (!items.length) {
+      list.hidden = true; ph.hidden = false;
+      ph.textContent = 'No registries yet. Add the first one in Admin. Guests won\u2019t see this tab until you do.';
+      applyVisibility(); return;
+    }
+    list.replaceChildren(...items.flatMap((item) => {
+      const parts = [];
+      if (str(item.lead).trim()) {
+        const lead = document.createElement('li');
+        const p = document.createElement('p');
+        p.className = 'registry-lead';
+        fillText(p, str(item.lead).trim());
+        lead.appendChild(p);
+        parts.push(lead);
+      }
+      const li = document.createElement('li');
+      li.className = 'gift';
+      const href = webLink(item.url);
+      const name = document.createElement(href ? 'a' : 'strong');
+      name.textContent = str(item.title) || 'Registry';
+      if (href) { name.className = 'gift-link'; name.href = href; name.target = '_blank'; name.rel = 'noopener noreferrer'; }
+      li.appendChild(name);
+      if (str(item.body).trim()) { const p = document.createElement('p'); fillText(p, str(item.body).trim()); li.appendChild(p); }
+      parts.push(li);
+      return parts;
+    }));
+    list.hidden = false; ph.hidden = true;
+    applyVisibility();
+  }
 
   /* ---------- Good to know: notes and the cats ---------- */
   function safePhoto(value) {
@@ -1546,7 +1652,7 @@
   $('pop').addEventListener('click', (event) => { if (event.target === $('pop')) closePop(); });
   $('jokes-toggle').addEventListener('click', () => { state.showAll = !state.showAll; renderQuotes(); });
 
-  const RENDER = { quote: renderQuotes, chapter: renderStory, detail: renderDetails, faq: renderFaq, award: renderAwards, note: renderKnow, cat: renderKnow };
+  const RENDER = { quote: renderQuotes, chapter: renderStory, detail: renderDetails, faq: renderFaq, award: renderAwards, note: renderKnow, cat: renderKnow, gift: renderRegistry };
 
   /* ---------- admin ---------- */
   function say(el, message, bad) { el.className = bad ? 'status bad' : 'status'; el.textContent = message; el.hidden = false; }
@@ -1608,6 +1714,7 @@
   function resetForm(kind) {
     state.edit[kind] = null;
     if (kind === 'cat') { photoDraft = undefined; $('admin-cat-photo').value = ''; showPhotoPreview(''); $('admin-cat-age').value = ''; }
+    if (kind === 'gift') { $('admin-gift-url').value = ''; $('admin-gift-lead').value = ''; }
     if (kind === 'quote') {
       el(kind, 'text').value = ''; el(kind, 'story').value = '';
       el(kind, 'save').textContent = 'Add quote';
@@ -1619,7 +1726,7 @@
     el(kind, 'cancel').hidden = true;
   }
   function pristine(kind) {
-    return !state.edit[kind] && !el(kind, 'title').value && !el(kind, 'body').value && !(kind === 'cat' && (photoDraft !== undefined || $('admin-cat-age').value));
+    return !state.edit[kind] && !el(kind, 'title').value && !el(kind, 'body').value && !(kind === 'cat' && (photoDraft !== undefined || $('admin-cat-age').value)) && !(kind === 'gift' && ($('admin-gift-url').value || $('admin-gift-lead').value));
   }
   function rowButton(label, danger, onClick) {
     const b = document.createElement('button');
@@ -1640,6 +1747,7 @@
         strong.textContent = num(item.position) + '. ' + (str(item.title) || 'Untitled');
         span.textContent = str(item.body) ? excerpt(str(item.body), 120) : 'No text yet';
         span.hidden = kind === 'award' && !str(item.body);
+        if (kind === 'gift') span.textContent = (str(item.lead) ? '\u201c' + excerpt(str(item.lead), 60) + '\u201d \u00b7 ' : '') + (str(item.url) || 'No link yet') + (str(item.body) ? ' \u00b7 ' + excerpt(str(item.body), 80) : '');
         if (kind === 'cat') span.textContent = (str(item.age) ? str(item.age) + ' \u00b7 ' : '') + (str(item.body) ? excerpt(str(item.body), 100) : 'No blurb yet') + (safePhoto(item.photo) ? ' \u00b7 photo added' : ' \u00b7 no photo');
       }
       what.append(strong, span);
@@ -1668,6 +1776,7 @@
       el(kind, 'title').value = str(item.title); el(kind, 'body').value = str(item.body);
       el(kind, 'position').value = String(num(item.position));
       if (kind === 'cat') { photoDraft = undefined; $('admin-cat-photo').value = ''; showPhotoPreview(safePhoto(item.photo)); $('admin-cat-age').value = str(item.age); }
+      if (kind === 'gift') { $('admin-gift-url').value = str(item.url); $('admin-gift-lead').value = str(item.lead); }
     }
     el(kind, 'save').textContent = 'Save changes';
     el(kind, 'cancel').hidden = false; el(kind, 'status').hidden = true;
@@ -1697,6 +1806,11 @@
     if (!title) { say(status, 'Give it a title.', true); el(kind, 'title').focus(); return null; }
     if (!(position >= 1)) { say(status, 'Position needs a number, 1 or higher.', true); el(kind, 'position').focus(); return null; }
     const data = { title: title, body: el(kind, 'body').value.trim(), position: position };
+    if (kind === 'gift') {
+      data.lead = $('admin-gift-lead').value.trim();
+      data.url = webLink($('admin-gift-url').value);
+      if (!data.url) { say(status, 'Paste the full registry link, starting with https://', true); $('admin-gift-url').focus(); return null; }
+    }
     if (kind === 'cat') {
       const old = state.items.cat.find((c) => c.id === state.edit.cat);
       data.age = $('admin-cat-age').value.trim();
@@ -1736,14 +1850,14 @@
   });
 
   function enterAdmin() {
-    ['chapter', 'detail', 'faq', 'award', 'note', 'cat'].forEach((kind) => { if (pristine(kind)) resetForm(kind); });
+    ['chapter', 'detail', 'faq', 'award', 'note', 'cat', 'gift'].forEach((kind) => { if (pristine(kind)) resetForm(kind); });
     if (!state.dressDirty) $('admin-dress-body').value = state.dress;
     Object.keys(LISTS).forEach(renderRows);
   }
   $('admin-close').addEventListener('click', () => go('home', true));
 
   /* ---------- store ---------- */
-  function renderAll() { renderStory(); renderDetails(); renderFaq(); renderAwards(); renderKnow(); renderQuotes(); renderDress(); }
+  function renderAll() { renderStory(); renderDetails(); renderFaq(); renderAwards(); renderKnow(); renderRegistry(); renderQuotes(); renderDress(); }
   function rowsOf(snap) { return snap.docs.map((d) => Object.assign({ id: d.id }, d.data() || {})); }
   function gone() { state.storeGone = true; renderAll(); }
   const byCreated = (a, b) => num(a.createdAt) - num(b.createdAt);

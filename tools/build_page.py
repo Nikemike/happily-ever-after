@@ -248,8 +248,8 @@ assert first_new != first
 s = s[:first_start] + first_new + s[first_end:]
 
 # ---------- store script: login view and an admin-enter signal ----------
-rep("const VIEWS = ['home', 'story', 'logistics', 'dress', 'faq', 'know', 'rsvp', 'photos', 'admin'];",
-    "const VIEWS = ['home', 'story', 'logistics', 'dress', 'faq', 'know', 'rsvp', 'photos', 'admin', 'login'];")
+rep("const VIEWS = ['home', 'story', 'logistics', 'dress', 'faq', 'know', 'rsvp', 'registry', 'photos', 'admin'];",
+    "const VIEWS = ['home', 'story', 'logistics', 'dress', 'faq', 'know', 'rsvp', 'registry', 'photos', 'admin', 'login'];")
 rep("    if (view === 'admin') return state.canEdit && !!state.db;\n",
     "    if (view === 'admin') return state.canEdit && !!state.db;\n    if (view === 'login') return !state.canEdit;\n")
 rep("    Object.keys(LISTS).forEach(renderRows);\n  }\n  $('admin-close')",
