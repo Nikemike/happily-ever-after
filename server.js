@@ -868,6 +868,31 @@ await migrateOnce('pets-v2', async () => {
     await store.put('cats', newId(), { title: pet.name, age: pet.age, body: pet.body, photo: pet.photo, position: last });
   }
 });
+// Meet the crew, 14 Nov 2026: Yaddle's age, the duck's name spelled like the pharmaceutical, and the
+// cards arranged youngest to oldest. Cards with no age keep their order, after the ones that have one.
+// The cards as they were are kept in cats_backup_v3.
+await migrateOnce('pets-v3', async () => {
+  const key = (v) => String(v || '').toLowerCase().replace(/[^a-z]/g, '');
+  const months = (age) => {
+    const m = /^\s*(\d+(?:\.\d+)?)\s*(week|wk|month|mo|year|yr)?/i.exec(String(age || ''));
+    if (!m) return null;
+    const unit = (m[2] || 'year').toLowerCase();
+    return Number(m[1]) * (unit.startsWith('w') ? 12 / 52 : unit.startsWith('m') ? 1 : 12);
+  };
+  const cards = (await store.list('cats')).sort((a, b) => (Number(a.position) || 0) - (Number(b.position) || 0));
+  for (const { id, ...data } of cards) await store.put('cats_backup_v3', id, data);
+  for (const card of cards) {
+    if (key(card.title) === 'yaddle') card.age = '6 months';
+    if (key(card.title) === 'quelude') card.title = 'Quaalude';
+  }
+  const aged = cards.filter((c) => months(c.age) !== null).sort((a, b) => months(a.age) - months(b.age));
+  const rest = cards.filter((c) => months(c.age) === null);
+  let position = 0;
+  for (const { id, ...data } of [...aged, ...rest]) {
+    position += 1;
+    await store.put('cats', id, { ...data, position });
+  }
+});
 // Startup self-check of the tools that make the location-free copies.
 {
   const v = await run(['-version'], 20_000);
