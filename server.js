@@ -248,12 +248,47 @@ app.use('/img', express.static(path.join(here, 'public', 'img'), { maxAge: '7d' 
 
 const json = express.json({ limit: '1mb' });
 
+// Pet photos are stored on each pet card as image data. The page gets a short address for each
+// photo instead, so the site's content stays small and the photos are fetched only when the
+// Good to Know tab is shown. The address changes whenever the photo does, so browsers can keep it.
+const PET_PHOTO_RE = /^data:image\/(jpeg|png|webp);base64,([A-Za-z0-9+/=]+)$/;
+const petPhotoVersion = (photo) => crypto.createHash('sha1').update(photo).digest('hex').slice(0, 12);
+const lightPets = (cards) => cards.map((card) => (
+  ID_RE.test(card.id) && typeof card.photo === 'string' && PET_PHOTO_RE.test(card.photo)
+    ? { ...card, photo: `/pet-photo/${card.id}/${petPhotoVersion(card.photo)}` }
+    : card));
+app.get('/pet-photo/:id/:version', async (req, res) => {
+  try {
+    const card = ID_RE.test(req.params.id) ? await store.get('cats', req.params.id) : null;
+    const m = card && typeof card.photo === 'string' ? PET_PHOTO_RE.exec(card.photo) : null;
+    if (!m) return res.status(404).type('text').send('No photo here.');
+    const current = petPhotoVersion(card.photo) === req.params.version;
+    res.setHeader('Cache-Control', current ? 'public, max-age=31536000, immutable' : 'no-cache');
+    res.type('image/' + m[1]).send(Buffer.from(m[2], 'base64'));
+  } catch (error) {
+    console.error('pet photo', error);
+    res.status(500).type('text').send('The photo could not load.');
+  }
+});
+// Admin sends a pet's photo address back when the photo was left alone: keep the stored photo then.
+// A copy of the page loaded before photo addresses existed cannot read them and would save an empty
+// photo by mistake, so an empty photo only removes the stored one when the current page sends it.
+async function keepPetPhoto(req, body) {
+  if (req.params.collection !== 'cats') return body;
+  const m = typeof body.photo === 'string' ? /^\/pet-photo\/([A-Za-z0-9_-]{1,64})\/[a-f0-9]{12}$/.exec(body.photo) : null;
+  const stalePage = !body.photo && req.params.id && req.get('X-Pet-Photos') !== '2';
+  if (!m && !stalePage) return body;
+  const old = await store.get('cats', m ? m[1] : req.params.id);
+  return { ...body, photo: old && typeof old.photo === 'string' ? old.photo : '' };
+}
+
 // Everything guests can read.
 app.get('/api/content', async (req, res) => {
   try {
     const out = {};
     const admin = isAdmin(req);
     for (const c of PUBLIC_COLLECTIONS) out[c] = HIDDEN_FROM_GUESTS.includes(c) && !admin ? [] : await store.list(c);
+    out.cats = lightPets(out.cats);
     res.setHeader('Cache-Control', 'no-store');
     res.json(out);
   } catch (error) {
@@ -759,12 +794,12 @@ function checkDoc(req, res) {
 app.post('/api/admin/:collection', requireAdmin, json, async (req, res) => {
   const body = checkDoc(req, res); if (!body) return;
   const id = newId();
-  await store.put(req.params.collection, id, body);
+  await store.put(req.params.collection, id, await keepPetPhoto(req, body));
   res.json({ ok: true, id });
 });
 app.put('/api/admin/:collection/:id', requireAdmin, json, async (req, res) => {
   const body = checkDoc(req, res); if (!body) return;
-  await store.put(req.params.collection, req.params.id, body);
+  await store.put(req.params.collection, req.params.id, await keepPetPhoto(req, body));
   res.json({ ok: true });
 });
 app.delete('/api/admin/:collection/:id', requireAdmin, async (req, res) => {
@@ -817,6 +852,20 @@ await migrateOnce('pets-v1', async () => {
       last += 1;
       await store.put('cats', newId(), { title: pet.name, age: pet.age, body: '', photo: pet.photo, position: last });
     }
+  }
+});
+// Yaddle, the ducks, the chickens and the coops (Nov 2026). Only adds cards, after the ones already
+// there; a card whose name is already on the site is left alone.
+await migrateOnce('pets-v2', async () => {
+  const pets = JSON.parse(fs.readFileSync(path.join(here, 'content', 'pets-v2.json'), 'utf8'));
+  const key = (v) => String(v || '').toLowerCase().replace(/[^a-z]/g, '');
+  const cards = await store.list('cats');
+  const have = new Set(cards.map((c) => key(c.title)));
+  let last = cards.reduce((m, c) => Math.max(m, Number(c.position) || 0), 0);
+  for (const pet of pets) {
+    if (have.has(key(pet.name))) continue;
+    last += 1;
+    await store.put('cats', newId(), { title: pet.name, age: pet.age, body: pet.body, photo: pet.photo, position: last });
   }
 });
 // Startup self-check of the tools that make the location-free copies.

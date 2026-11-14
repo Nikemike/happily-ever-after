@@ -1454,7 +1454,8 @@
   /* ---------- Good to know: notes and the cats ---------- */
   function safePhoto(value) {
     value = str(value);
-    return /^data:image\/(jpeg|png|webp);base64,[A-Za-z0-9+/=]+$/.test(value) ? value : '';
+    // Either image data (the preview, or a photo just chosen in Admin) or the live site's photo address.
+    return /^data:image\/(jpeg|png|webp);base64,[A-Za-z0-9+/=]+$/.test(value) || /^\/pet-photo\/[A-Za-z0-9_-]{1,64}\/[a-f0-9]{12}$/.test(value) ? value : '';
   }
   function renderKnow() {
     const section = $('know'), notes = state.items.note, cats = state.items.cat;
@@ -1485,6 +1486,8 @@
       let picture;
       if (photo) {
         picture = document.createElement('img');
+        picture.loading = 'lazy'; // fetched only once the Good to Know tab is on screen
+        picture.decoding = 'async';
         picture.src = photo;
         picture.alt = 'Photo of ' + (str(cat.title) || 'a pet');
       } else {

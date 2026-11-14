@@ -36,7 +36,8 @@
   async function send(method, url, body) {
     const r = await fetch(url, {
       method: method,
-      headers: body ? { 'Content-Type': 'application/json' } : {},
+      // X-Pet-Photos tells the server this page understands photo addresses (see keepPetPhoto there).
+      headers: body ? { 'Content-Type': 'application/json', 'X-Pet-Photos': '2' } : {},
       body: body ? JSON.stringify(body) : undefined
     });
     if (!r.ok) throw { code: codeFor(r.status) };
