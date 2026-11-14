@@ -893,6 +893,24 @@ await migrateOnce('pets-v3', async () => {
     await store.put('cats', id, { ...data, position });
   }
 });
+// Bubba and Mohawk (Nov 2026). Added with the other chickens, right after Omelette; the cards after
+// that move down to make room. A card whose name is already on the site is left alone.
+await migrateOnce('pets-v4', async () => {
+  const pets = JSON.parse(fs.readFileSync(path.join(here, 'content', 'pets-v4.json'), 'utf8'));
+  const key = (v) => String(v || '').toLowerCase().replace(/[^a-z]/g, '');
+  const cards = (await store.list('cats')).sort((a, b) => (Number(a.position) || 0) - (Number(b.position) || 0));
+  const have = new Set(cards.map((c) => key(c.title)));
+  const fresh = pets.filter((pet) => !have.has(key(pet.name)))
+    .map((pet) => ({ id: newId(), title: pet.name, age: pet.age, body: pet.body, photo: pet.photo }));
+  if (!fresh.length) return;
+  const after = cards.findIndex((c) => key(c.title) === 'omelette');
+  const at = after === -1 ? cards.length : after + 1;
+  const next = [...cards.slice(0, at), ...fresh, ...cards.slice(at)];
+  for (let i = at; i < next.length; i++) {
+    const { id, ...data } = next[i];
+    await store.put('cats', id, { ...data, position: i + 1 });
+  }
+});
 // Startup self-check of the tools that make the location-free copies.
 {
   const v = await run(['-version'], 20_000);
