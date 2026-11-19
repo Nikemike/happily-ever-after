@@ -1,0 +1,32 @@
+[
+  {
+    "id": "airports",
+    "title": "Airports",
+    "body": ""
+  },
+  {
+    "id": "train",
+    "title": "Train",
+    "body": "Amtrak's Auto Train runs overnight from Lorton, Virginia to Sanford, Florida, near Orlando, and your car rides along. You have to bring a vehicle to book it.\n\nIt leaves every day at 4:00 PM and arrives at 8:59 AM. Check Amtrak for your date."
+  },
+  {
+    "id": "hotels",
+    "title": "Hotels",
+    "body": ""
+  },
+  {
+    "id": "parking",
+    "title": "Parking",
+    "body": "Open parking alongside 10th Ave."
+  },
+  {
+    "id": "menu",
+    "title": "Menu",
+    "body": "Tropical Luau:\nRoasted Pig\nHawaiian Glazed Chicken\nIsland Pulled Pork\nTropical Fruit Salad\nTeriyaki Rice & Veggies\nSweet Cole Slaw\nHawaiian Rolls\n\nGenuine Pittsburgh Cookie Table - Brought to you by Doctor Casie Huges Rock."
+  },
+  {
+    "id": "beverages",
+    "title": "Beverages",
+    "body": "Beer, Wine, Soda, Juice, Various tropical cocktails and Jungle Juices will be available.\n\nOpen bar will not have liquor, but if you have a bottle you want to bring, we'll have plenty of cooler and bar space to serve you from it."
+  }
+]

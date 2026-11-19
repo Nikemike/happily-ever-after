@@ -245,6 +245,8 @@ const indexFile = path.join(here, 'public', 'index.html');
 const sendIndex = (req, res) => { res.setHeader('Cache-Control', 'no-cache'); res.sendFile(indexFile); };
 app.get(['/', '/admin'], sendIndex);
 app.use('/img', express.static(path.join(here, 'public', 'img'), { maxAge: '7d' }));
+// The map library for the Logistics tab (Leaflet), served from this site.
+app.use('/vendor', express.static(path.join(here, 'public', 'vendor'), { maxAge: '30d' }));
 
 const json = express.json({ limit: '1mb' });
 
@@ -909,6 +911,32 @@ await migrateOnce('pets-v4', async () => {
   for (let i = at; i < next.length; i++) {
     const { id, ...data } = next[i];
     await store.put('cats', id, { ...data, position: i + 1 });
+  }
+});
+// Logistics, 19 Nov 2026: airports, train, hotels, parking and menu. Adds the Airports and Train
+// sections, fills in a section's text only where it is still empty, and puts the sections in travel
+// order (any other section keeps its place after them). The sections as they were are kept in
+// details_backup_v1. The addresses and map pins for each place live in the page (PLACES).
+await migrateOnce('logistics-v1', async () => {
+  const next = JSON.parse(fs.readFileSync(path.join(here, 'content', 'logistics-v1.json'), 'utf8'));
+  const have = (await store.list('details')).sort((a, b) => (Number(a.position) || 0) - (Number(b.position) || 0));
+  for (const { id, ...data } of have) await store.put('details_backup_v1', id, data);
+  const rest = new Map(have.map((doc) => [doc.id, doc]));
+  let position = 0;
+  for (const section of next) {
+    position += 1;
+    const old = rest.get(section.id);
+    rest.delete(section.id);
+    if (old) {
+      const { id, ...data } = old;
+      await store.put('details', id, { ...data, body: String(data.body || '').trim() ? data.body : section.body, position });
+    } else {
+      await store.put('details', section.id, { title: section.title, body: section.body, position });
+    }
+  }
+  for (const { id, ...data } of rest.values()) {
+    position += 1;
+    await store.put('details', id, { ...data, position });
   }
 });
 // Startup self-check of the tools that make the location-free copies.

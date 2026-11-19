@@ -709,6 +709,56 @@
   .detail h3 { margin: 0; font-family: var(--font-caps); font-weight: 600; font-size: 1.35rem; line-height: 1.3; }
   .detail .body { display: flex; flex-direction: column; gap: 12px; }
   .soon { font-style: italic; opacity: 0.7; }
+  /* Logistics text keeps single line breaks, so a menu can be typed one dish per line. */
+  #details-list .body p { white-space: pre-line; }
+  /* Places: an airport, station or hotel under its Logistics section, and the maps that show them. */
+  .places { list-style: none; margin: 4px 0 0; padding: 0; display: flex; flex-direction: column; gap: 12px; }
+  .place {
+    display: flex; flex-direction: column; gap: 6px; padding: 14px 16px;
+    background: var(--card); border: 1px solid var(--line); border-left: 5px solid var(--pin, var(--leaf)); border-radius: 4px;
+  }
+  .place.is-picked { border-color: var(--pin, var(--leaf)); box-shadow: 0 0 0 2px var(--pin, var(--leaf)); }
+  .place[data-kind="airport"], .legend [data-kind="airport"], .pin[data-kind="airport"] { --pin: var(--hibiscus-deep); }
+  .place[data-kind="train"], .legend [data-kind="train"], .pin[data-kind="train"] { --pin: var(--thatch); }
+  .place[data-kind="hotel"], .legend [data-kind="hotel"], .pin[data-kind="hotel"] { --pin: var(--leaf); }
+  .place .tier { font-family: var(--font-smallcaps); font-size: 1rem; letter-spacing: 0.04em; color: var(--hibiscus-deep); }
+  .place h4 { margin: 0; font: 700 1.0625rem/1.35 var(--font-text); }
+  .place address { font-style: normal; }
+  .place .note { margin: 0; font-size: 0.9375rem; opacity: 0.85; }
+  .place-acts { display: flex; flex-wrap: wrap; gap: 8px; margin: 6px 0 0; }
+  .mini[aria-pressed="true"] { background: var(--monstera); border-color: var(--monstera); color: var(--paper); }
+  .wayfinder { display: flex; flex-direction: column; gap: 14px; padding: 22px 2px 26px; border-top: 1px solid var(--line); }
+  .wayfinder h3 { margin: 0; font-family: var(--font-caps); font-weight: 600; font-size: 1.35rem; line-height: 1.3; }
+  .wayfinder p { margin: 0; }
+  .map-views { display: flex; flex-wrap: wrap; gap: 8px; }
+  #pin-map {
+    position: relative; z-index: 0; isolation: isolate;
+    height: clamp(300px, 62vw, 420px); background: #dfe8e3;
+    border: 1px solid var(--line-strong); border-radius: 4px; font-family: var(--font-text);
+  }
+  .pin {
+    display: grid; place-items: center; width: 26px; height: 26px; border-radius: 50% 50% 50% 0; transform: rotate(-45deg);
+    background: var(--pin, var(--leaf)); border: 2px solid #fff; box-shadow: 0 1px 4px rgba(0, 0, 0, 0.45);
+  }
+  .pin b { transform: rotate(45deg); color: #fff; font: 700 0.75rem/1 var(--font-text); }
+  .pin.is-picked { outline: 3px solid var(--plumeria); outline-offset: 1px; }
+  .legend { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: 0.875rem; }
+  .legend li { display: flex; align-items: center; gap: 7px; }
+  .legend i {
+    display: grid; place-items: center; width: 18px; height: 18px; border-radius: 50%;
+    background: var(--pin); color: #fff; font: 700 0.6875rem/1 var(--font-text);
+  }
+  .gmap { display: flex; flex-direction: column; gap: 10px; margin-top: 8px; }
+  .gmap select {
+    width: 100%; padding: 13px 15px; font: inherit; color: var(--monstera);
+    background: var(--field); border: 1.5px solid var(--line-strong); border-radius: 4px;
+  }
+  .gmap iframe {
+    display: block; width: 100%; height: clamp(300px, 62vw, 420px);
+    background: #dfe8e3; border: 1px solid var(--line-strong); border-radius: 4px;
+  }
+  .pop { display: flex; flex-direction: column; gap: 4px; font: 400 0.875rem/1.4 var(--font-text); color: var(--monstera); }
+  .pop a { color: var(--hibiscus-deep); font-weight: 700; }
   .registry-intro {
     max-width: 30ch; margin: 0 auto 30px; text-align: center; color: var(--hibiscus-deep);
     font-family: var(--font-smallcaps); font-size: clamp(1.35rem, 4.6vw, 1.9rem); line-height: 1.35;
@@ -831,6 +881,30 @@
     </header>
     <div class="details" id="details-list" hidden></div>
     <p class="placeholder" id="details-placeholder">The details load here.</p>
+    <div class="wayfinder" id="wayfinder" hidden>
+      <h3>Map</h3>
+      <div class="map-views" role="group" aria-label="Area the map shows">
+        <button class="mini" type="button" data-zone="naples" aria-pressed="true">Naples area</button>
+        <button class="mini" type="button" data-zone="florida" aria-pressed="false">Florida</button>
+        <button class="mini" type="button" data-zone="all" aria-pressed="false">Whole route</button>
+      </div>
+      <div id="pin-map" aria-label="Map with a pin for each airport, train station and hotel"></div>
+      <p class="soon" id="pin-map-note" hidden>The pin map did not load. The Google map below still works.</p>
+      <ul class="legend" aria-label="What the pins mean">
+        <li><i data-kind="airport">A</i>Airport</li>
+        <li><i data-kind="train">T</i>Train station</li>
+        <li><i data-kind="hotel">H</i>Hotel</li>
+      </ul>
+      <div class="gmap">
+        <label class="q" for="gmap-pick">Google Maps</label>
+        <select id="gmap-pick"></select>
+        <iframe id="gmap-frame" title="Google map of the place chosen above" allowfullscreen></iframe>
+        <p class="place-acts">
+          <a class="mini" id="gmap-open" href="https://www.google.com/maps" target="_blank" rel="noopener noreferrer">Open in Google Maps</a>
+          <a class="mini" id="gmap-dir" href="https://www.google.com/maps" target="_blank" rel="noopener noreferrer">Get directions</a>
+        </p>
+      </div>
+    </div>
   </section>
 
   <section class="dress-page" id="dress" aria-labelledby="dress-title" data-view="dress">
@@ -1399,16 +1473,212 @@
       const body = document.createElement('div');
       body.className = 'body';
       paragraphs(body, item.body);
-      if (!body.children.length) {
+      const places = kind === 'detail' ? placeCards(item.id) : null;
+      if (!body.children.length && !places) {
         const p = document.createElement('p');
         p.className = 'soon'; p.textContent = emptyBody;
         body.appendChild(p);
       }
       article.append(h, body);
+      if (places) { article.dataset.places = '1'; article.appendChild(places); }
       return article;
     }));
+    if (kind === 'detail') seatWayfinder(list);
     list.hidden = false; ph.hidden = true;
     applyVisibility();
+  }
+
+  /* ---------- Logistics: places and maps ----------
+     The airports, stations and hotels shown under a Logistics section, and on the two maps. A place
+     goes under the section whose id matches its `section`; the section's title and text stay editable
+     in Admin. Places with no lat/lng (Airbnb) get a card but no pin.
+     zone: 'naples' = close to Naples, 'florida' = elsewhere in Florida, 'all' = out of state. */
+  const PLACES = [
+    { id: 'mia', section: 'airports', kind: 'airport', zone: 'florida', tier: '$ Budget',
+      name: 'Miami International Airport (MIA)', address: '2100 NW 42nd Ave, Miami, FL 33142',
+      phone: '305-876-7000', site: 'https://www.miami-airport.com/',
+      note: 'About 2 hours’ drive to Naples.', lat: 25.795361, lng: -80.290116 },
+    { id: 'tpa', section: 'airports', kind: 'airport', zone: 'florida', tier: '$ Budget',
+      name: 'Tampa International Airport (TPA)', address: '4100 George J. Bean Pkwy, Tampa, FL 33607',
+      phone: '813-870-8700', site: 'https://www.tampaairport.com/',
+      note: 'About 2½ hours’ drive to Naples.', lat: 27.97739, lng: -82.53286 },
+    { id: 'rsw', section: 'airports', kind: 'airport', zone: 'naples', tier: '$$ Easiest',
+      name: 'Southwest Florida International Airport (RSW)', address: '11000 Terminal Access Rd, Fort Myers, FL 33913',
+      phone: '239-590-4800', site: 'https://www.flylcpa.com/',
+      note: 'In Fort Myers, about 35 minutes’ drive to the Naples area.', lat: 26.536164, lng: -81.755155 },
+    { id: 'apf', section: 'airports', kind: 'airport', zone: 'naples', tier: '$$$ Closest',
+      name: 'Naples Airport (APF)', address: 'North Road Terminal, 500 Terminal Dr, Naples, FL 34104',
+      phone: '239-643-0733', site: 'https://www.flynaples.com/',
+      note: 'In Naples. American Airlines flies here nonstop from Charlotte (CLT) twice a day, starting December 2, 2026.',
+      query: 'Naples Airport North Road Terminal, 500 Terminal Dr, Naples, FL 34104', lat: 26.1524, lng: -81.7756 },
+    { id: 'lorton', section: 'train', kind: 'train', zone: 'all', tier: 'Board here',
+      name: 'Auto Train station, Lorton, VA', address: '8006 Lorton Rd, Lorton, VA 22079',
+      phone: '800-872-7245', site: 'https://www.amtrak.com/auto-train-experience', siteLabel: 'Amtrak Auto Train',
+      note: 'Vehicle check-in runs 11:30 AM to 2:30 PM on the day you leave.',
+      query: 'Amtrak Auto Train Station, 8006 Lorton Rd, Lorton, VA 22079', lat: 38.7084, lng: -77.2207 },
+    { id: 'sanford', section: 'train', kind: 'train', zone: 'florida', tier: 'Get off here',
+      name: 'Auto Train station, Sanford, FL', address: '600 S Persimmon Ave, Sanford, FL 32771',
+      phone: '800-872-7245',
+      note: 'About 4 hours’ drive from here to Naples.',
+      query: 'Amtrak Auto Train Station, 600 S Persimmon Ave, Sanford, FL 32771', lat: 28.80709, lng: -81.28885 },
+    { id: 'fairways', section: 'hotels', kind: 'hotel', zone: 'naples', tier: 'Cute & Quaint',
+      name: 'Fairways Inn of Naples', address: '103 Palm River Blvd, Naples, FL 34110',
+      phone: '239-597-8181', lat: 26.2731, lng: -81.77861 },
+    { id: 'gwl', section: 'hotels', kind: 'hotel', zone: 'naples', tier: 'Campy',
+      name: 'Great Wolf Lodge', address: '3900 City Gate Blvd N, Naples, FL 34117',
+      phone: '866-462-9653', site: 'https://www.greatwolf.com/naples',
+      lat: 26.16777, lng: -81.67569 },
+    { id: 'airbnb', section: 'hotels', kind: 'hotel', zone: 'naples', tier: '',
+      name: 'Local Airbnb', site: 'https://www.airbnb.com/s/Naples--FL/homes', siteLabel: 'Browse Airbnb in Naples' },
+  ];
+  const PIN_LETTER = { airport: 'A', train: 'T', hotel: 'H' };
+  const OVERVIEW = 'Naples, FL';
+  const placeQuery = (p) => p.query || (p.name + ', ' + p.address);
+  const mapsEmbed = (q) => 'https://www.google.com/maps?q=' + encodeURIComponent(q) + '&output=embed';
+  const mapsOpen = (q) => 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(q);
+  const mapsDirections = (q) => 'https://www.google.com/maps/dir/?api=1&destination=' + encodeURIComponent(q);
+  const way = { map: null, markers: {}, picked: '', seen: false, loading: false };
+
+  function outLink(href, label) {
+    const a = document.createElement('a');
+    a.className = 'mini'; a.href = href; a.textContent = label; a.target = '_blank'; a.rel = 'noopener noreferrer';
+    return a;
+  }
+  function placeCards(sectionId) {
+    const mine = PLACES.filter((p) => p.section === sectionId);
+    if (!mine.length) return null;
+    const ul = document.createElement('ul');
+    ul.className = 'places';
+    mine.forEach((p) => {
+      const li = document.createElement('li');
+      li.className = 'place' + (way.picked === p.id ? ' is-picked' : '');
+      li.dataset.place = p.id; li.dataset.kind = p.kind;
+      if (p.tier) { const tier = document.createElement('span'); tier.className = 'tier'; tier.textContent = p.tier; li.appendChild(tier); }
+      const h = document.createElement('h4'); h.textContent = p.name; li.appendChild(h);
+      if (p.address) { const ad = document.createElement('address'); ad.textContent = p.address; li.appendChild(ad); }
+      if (p.note) { const n = document.createElement('p'); n.className = 'note'; n.textContent = p.note; li.appendChild(n); }
+      const acts = document.createElement('p');
+      acts.className = 'place-acts';
+      if (p.phone) { const tel = outLink('tel:+1' + p.phone.replace(/\D/g, ''), 'Call ' + p.phone); tel.removeAttribute('target'); tel.removeAttribute('rel'); acts.appendChild(tel); }
+      if (p.site) acts.appendChild(outLink(p.site, p.siteLabel || 'Website'));
+      if (p.address) {
+        acts.appendChild(outLink(mapsDirections(placeQuery(p)), 'Directions'));
+        const show = document.createElement('button');
+        show.className = 'mini'; show.type = 'button'; show.textContent = 'Show on map';
+        show.addEventListener('click', () => { pickPlace(p.id, true); $('wayfinder').scrollIntoView({ behavior: 'smooth', block: 'start' }); });
+        acts.appendChild(show);
+      }
+      li.appendChild(acts);
+      ul.appendChild(li);
+    });
+    return ul;
+  }
+  // The maps sit right after the last section that has places (after Hotels, before Parking).
+  function seatWayfinder(list) {
+    const box = $('wayfinder');
+    const withPlaces = list.querySelectorAll('article[data-places]');
+    if (!withPlaces.length) { box.hidden = true; $('logistics').appendChild(box); return; }
+    withPlaces[withPlaces.length - 1].after(box);
+    box.hidden = false;
+    if (way.map) way.map.invalidateSize();
+  }
+  function pickPlace(id, moveMap) {
+    const p = PLACES.find((x) => x.id === id && x.address) || null;
+    way.picked = p ? p.id : '';
+    const q = p ? placeQuery(p) : OVERVIEW;
+    document.querySelectorAll('.place').forEach((el) => el.classList.toggle('is-picked', el.dataset.place === way.picked));
+    Object.keys(way.markers).forEach((k) => { const el = way.markers[k].getElement(); if (el) el.firstElementChild.classList.toggle('is-picked', k === way.picked); });
+    $('gmap-pick').value = way.picked;
+    $('gmap-open').href = mapsOpen(q);
+    $('gmap-dir').href = mapsDirections(q);
+    if (way.seen) { const src = mapsEmbed(q); if ($('gmap-frame').getAttribute('src') !== src) $('gmap-frame').src = src; }
+    if (!p && way.map) way.map.closePopup();
+    if (p && moveMap && way.map && way.markers[p.id]) {
+      way.map.setView([p.lat, p.lng], Math.max(way.map.getZoom(), 11));
+      way.markers[p.id].openPopup();
+    }
+  }
+  function showZone(zone) {
+    document.querySelectorAll('.map-views [data-zone]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.zone === zone)));
+    if (!way.map) return;
+    const reach = zone === 'all' ? ['naples', 'florida', 'all'] : zone === 'florida' ? ['naples', 'florida'] : ['naples'];
+    const points = PLACES.filter((p) => typeof p.lat === 'number' && reach.indexOf(p.zone) >= 0).map((p) => [p.lat, p.lng]);
+    way.map.fitBounds(points, { padding: [34, 34], maxZoom: 12 });
+  }
+  function loadLeaflet() {
+    if (window.L) return Promise.resolve();
+    const part = (tag, attrs) => new Promise((resolve, reject) => {
+      const el = Object.assign(document.createElement(tag), attrs);
+      el.onload = resolve; el.onerror = reject;
+      document.head.appendChild(el);
+    });
+    return Promise.all([
+      part('link', { rel: 'stylesheet', href: '/vendor/leaflet/leaflet.css' }),
+      part('script', { src: '/vendor/leaflet/leaflet.js' }),
+    ]);
+  }
+  function drawPinMap() {
+    const L = window.L;
+    const map = L.map('pin-map', { scrollWheelZoom: false });
+    // The site sends no referrer by default; OpenStreetMap's tile servers ask for one, so tiles opt in.
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 18, referrerPolicy: 'strict-origin-when-cross-origin',
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">OpenStreetMap</a> contributors',
+    }).addTo(map);
+    PLACES.filter((p) => typeof p.lat === 'number').forEach((p) => {
+      const pin = document.createElement('span');
+      pin.className = 'pin' + (way.picked === p.id ? ' is-picked' : ''); pin.dataset.kind = p.kind;
+      const letter = document.createElement('b'); letter.textContent = PIN_LETTER[p.kind] || '';
+      pin.appendChild(letter);
+      const pop = document.createElement('div');
+      pop.className = 'pop';
+      const name = document.createElement('strong'); name.textContent = p.name;
+      const where = document.createElement('span'); where.textContent = p.address;
+      const dir = document.createElement('a');
+      dir.href = mapsDirections(placeQuery(p)); dir.textContent = 'Directions'; dir.target = '_blank'; dir.rel = 'noopener noreferrer';
+      pop.append(name, where, dir);
+      const marker = L.marker([p.lat, p.lng], {
+        title: p.name, alt: p.name,
+        icon: L.divIcon({ className: '', html: pin, iconSize: [26, 26], iconAnchor: [13, 26], popupAnchor: [0, -24] }),
+      }).addTo(map).bindPopup(pop);
+      marker.on('click', () => pickPlace(p.id, false));
+      way.markers[p.id] = marker;
+    });
+    way.map = map;
+    showZone('naples');
+    // A place chosen from its card before the map was drawn: go to it now.
+    if (way.picked) pickPlace(way.picked, true);
+  }
+  function startWayfinder() {
+    const pick = $('gmap-pick');
+    const first = document.createElement('option');
+    first.value = ''; first.textContent = 'Naples, Florida (overview)';
+    pick.appendChild(first);
+    [['airports', 'Airports'], ['train', 'Train'], ['hotels', 'Hotels']].forEach(([section, label]) => {
+      const group = document.createElement('optgroup');
+      group.label = label;
+      PLACES.filter((p) => p.section === section && p.address).forEach((p) => {
+        const o = document.createElement('option');
+        o.value = p.id; o.textContent = p.name;
+        group.appendChild(o);
+      });
+      pick.appendChild(group);
+    });
+    pick.addEventListener('change', () => pickPlace(pick.value, true));
+    document.querySelectorAll('.map-views [data-zone]').forEach((b) => b.addEventListener('click', () => showZone(b.dataset.zone)));
+    pickPlace('', false);
+    // Both maps wait until a guest actually has them on screen (the Logistics tab, scrolled to the map).
+    const wake = () => {
+      if (way.seen) return;
+      way.seen = true;
+      pickPlace(way.picked, false);
+      loadLeaflet().then(drawPinMap).catch(() => { $('pin-map').hidden = true; $('pin-map-note').hidden = false; });
+    };
+    if (!('IntersectionObserver' in window)) { wake(); return; }
+    const watch = new IntersectionObserver((entries) => {
+      if (entries.some((e) => e.isIntersecting)) { watch.disconnect(); wake(); }
+    }, { rootMargin: '300px' });
+    watch.observe($('wayfinder'));
   }
   function renderDetails() { renderBlocks('detail', 'logistics', 'details-list', 'details-placeholder', 'No sections yet. Add the first one in Admin.', 'Details to come.'); }
   function renderFaq() { renderBlocks('faq', 'faq', 'faq-list', 'faq-placeholder', 'No questions yet. Add the first one in Admin.', 'Answer to come.'); }
@@ -1868,6 +2138,7 @@
 
   async function start() {
     const wanted = location.hash.slice(1);
+    startWayfinder();
     renderAll();
     if (VIEWS.indexOf(wanted) >= 0) go(wanted, false);
     const claude = window.claude;
