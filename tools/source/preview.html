@@ -757,8 +757,8 @@
     display: block; width: 100%; height: clamp(300px, 62vw, 420px);
     background: #dfe8e3; border: 1px solid var(--line-strong); border-radius: 4px;
   }
-  .pop { display: flex; flex-direction: column; gap: 4px; font: 400 0.875rem/1.4 var(--font-text); color: var(--monstera); }
-  .pop a { color: var(--hibiscus-deep); font-weight: 700; }
+  .pin-pop { display: flex; flex-direction: column; gap: 4px; font: 400 0.875rem/1.4 var(--font-text); color: var(--monstera); }
+  .pin-pop a { color: var(--hibiscus-deep); font-weight: 700; }
   .registry-intro {
     max-width: 30ch; margin: 0 auto 30px; text-align: center; color: var(--hibiscus-deep);
     font-family: var(--font-smallcaps); font-size: clamp(1.35rem, 4.6vw, 1.9rem); line-height: 1.35;
@@ -1631,7 +1631,7 @@
       const letter = document.createElement('b'); letter.textContent = PIN_LETTER[p.kind] || '';
       pin.appendChild(letter);
       const pop = document.createElement('div');
-      pop.className = 'pop';
+      pop.className = 'pin-pop';
       const name = document.createElement('strong'); name.textContent = p.name;
       const where = document.createElement('span'); where.textContent = p.address;
       const dir = document.createElement('a');

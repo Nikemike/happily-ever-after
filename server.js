@@ -939,6 +939,14 @@ await migrateOnce('logistics-v1', async () => {
     await store.put('details', id, { ...data, position });
   }
 });
+// Dress Code, 20 Nov 2026: formality line, the usual late-February weather and what to expect.
+// Only fills the Dress Code text while it is still empty; text typed in Admin is left alone.
+await migrateOnce('dress-v1', async () => {
+  const have = await store.get('pages', 'dress');
+  if (have && String(have.body || '').trim()) return;
+  const next = JSON.parse(fs.readFileSync(path.join(here, 'content', 'dress-v1.json'), 'utf8'));
+  await store.put('pages', 'dress', { body: next.body });
+});
 // Startup self-check of the tools that make the location-free copies.
 {
   const v = await run(['-version'], 20_000);
