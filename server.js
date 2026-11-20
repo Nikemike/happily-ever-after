@@ -947,6 +947,16 @@ await migrateOnce('dress-v1', async () => {
   const next = JSON.parse(fs.readFileSync(path.join(here, 'content', 'dress-v1.json'), 'utf8'));
   await store.put('pages', 'dress', { body: next.body });
 });
+// Dress Code, 20 Nov 2026 (2): the wedding is entirely outside; it officially ends at sunset and the
+// party carries on. Replaces the text only if it is still exactly what dress-v1 wrote (or empty), so
+// anything typed in Admin since is left alone.
+await migrateOnce('dress-v2', async () => {
+  const read = (name) => JSON.parse(fs.readFileSync(path.join(here, 'content', name), 'utf8')).body;
+  const have = await store.get('pages', 'dress');
+  const now = String((have && have.body) || '').trim();
+  if (now && now !== read('dress-v1.json').trim()) { console.log('dress-v2: Dress Code text was edited in Admin, left as is'); return; }
+  await store.put('pages', 'dress', { body: read('dress-v2.json') });
+});
 // Startup self-check of the tools that make the location-free copies.
 {
   const v = await run(['-version'], 20_000);
