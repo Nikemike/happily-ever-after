@@ -957,6 +957,24 @@ await migrateOnce('dress-v2', async () => {
   if (now && now !== read('dress-v1.json').trim()) { console.log('dress-v2: Dress Code text was edited in Admin, left as is'); return; }
   await store.put('pages', 'dress', { body: read('dress-v2.json') });
 });
+// Dress Code, 20 Nov 2026 (3): footwear, now that the ground is known (grass and pavers). Replaces
+// the text only if it is still exactly what dress-v2 wrote, so anything typed in Admin is left alone.
+await migrateOnce('dress-v3', async () => {
+  const read = (name) => JSON.parse(fs.readFileSync(path.join(here, 'content', name), 'utf8')).body;
+  const have = await store.get('pages', 'dress');
+  const now = String((have && have.body) || '').trim();
+  if (now !== read('dress-v2.json').trim()) { console.log('dress-v3: Dress Code text was edited in Admin, left as is'); return; }
+  await store.put('pages', 'dress', { body: read('dress-v3.json') });
+});
+// FAQ, 20 Nov 2026: when it ends. Added after the existing questions, unless one with this title exists.
+await migrateOnce('faq-ends-v1', async () => {
+  const next = JSON.parse(fs.readFileSync(path.join(here, 'content', 'faq-ends-v1.json'), 'utf8'));
+  const have = await store.list('faq');
+  const key = (v) => String(v || '').toLowerCase().replace(/[^a-z]/g, '');
+  if (have.some((q) => key(q.title) === key(next.title))) return;
+  const last = have.reduce((max, q) => Math.max(max, Number(q.position) || 0), 0);
+  await store.put('faq', 'ends', { title: next.title, body: next.body, position: last + 1 });
+});
 // Startup self-check of the tools that make the location-free copies.
 {
   const v = await run(['-version'], 20_000);
